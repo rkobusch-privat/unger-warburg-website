@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
+
+  <!-- Canonical: auf Subdomain setzen -->
+  <link rel="canonical" href="{{CANONICAL}}" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/styles.css" />
+
+  <!-- Optional: kleine Zusatzregeln nur für Offers-Grid -->
+  <style>
+    .offers-grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top:18px;
+    }
+    @media (max-width: 920px){
+      .offers-grid{ grid-template-columns: 1fr; }
+    }
+
+    /* Karte leicht an euren Tile-Look angelehnt */
+    .offer{
+      position:relative;
+      overflow:hidden;
+      background: rgba(255,255,255,0.92);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 560px){
+      .offer{ grid-template-columns: 1fr; }
+    }
+    .offer::before{
+      content:"";
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width:6px;
+      background: linear-gradient(180deg, var(--accent), rgba(0,0,0,0.65));
+      opacity:0.95;
+    }
+    .offer__img{
+      width:100%;
+      height:140px;
+      object-fit:cover;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(246,246,247,0.88);
+    }
+    .offer__title{ margin:0 0 6px; }
+    .offer__meta{ display:flex; gap:10px; flex-wrap:wrap; color:var(--muted); font-weight:800; font-size:14px; }
+    .offer__price{ font-weight:1000; font-size:20px; margin:8px 0 6px; }
+    .offer__rrp{ color:var(--muted); font-weight:800; font-size:14px; }
+    .offer__rrp span{ text-decoration: line-through; margin-left:6px; }
+    .offer__note{ margin:10px 0 0; color:var(--muted); }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,0.8);
+      color:var(--ink);
+    }
+    .tag--hot{
+      border-color: rgba(198,0,0,0.22);
+      background: rgba(198,0,0,0.10);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <div class="topbar__left">
+        <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+        <a class="toplink" href="/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
+      </div>
+      <div class="topbar__right">
+        <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
+        <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="start">
+    <div class="container header__inner">
+      <a class="brand" href="/" aria-label="Startseite">
+        <img src="/img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
+      </a>
+
+      <nav class="nav" aria-label="Hauptnavigation">
+        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+          <span class="nav__toggleLines" aria-hidden="true"></span>
+          <span class="sr-only">Menü</span>
+        </button>
+
+        <ul class="nav__menu" id="navMenu">
+          <li><a href="/">Start</a></li>
+          <li><a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+          <li><a href="/tv-audio-warburg.html">TV & Audio</a></li>
+          <li><a href="/handy-warburg.html">Handy</a></li>
+          <li><a href="/computer-warburg.html">Computer</a></li>
+          <li><a href="/satellit-internet-warburg.html">Satellit & Internet</a></li>
+          <li><a href="/service-reparatur-warburg.html">Service & Reparatur</a></li>
+          <li><a href="/#ueber-uns">Über uns</a></li>
+          <li><a class="btn btn--small" href="/#kontakt">Angebot anfragen</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Internal Page Hero (nutzt eure bestehenden Styles) -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>{{H1}}</h1>
+      <p class="lead">{{SUBTITLE}}</p>
+      <p class="breadcrumbs"><a href="/">Start</a> · <span>{{H1}}</span></p>
+    </div>
+  </section>
+
+  <main class="section">
+    <div class="container">
+      {{CONTENT}}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img src="/img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+      </div>
+
+      <div class="footer__links">
+        <a href="/">Start</a>
+        <a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+        <a href="/tv-audio-warburg.html">TV & Audio</a>
+        <a href="/handy-warburg.html">Handy</a>
+        <a href="/computer-warburg.html">Computer</a>
+        <a href="/satellit-internet-warburg.html">Satellit & Internet</a>
+        <a href="/service-reparatur-warburg.html">Service & Reparatur</a>
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+      </div>
+
+      <div class="footer__fine">
+        © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var el = document.getElementById("year");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+  </script>
+  <script src="/script.js"></script>
+</body>
+</html>
