@@ -1,13 +1,35 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{TITLE}}</title>
-  <meta name="description" content="{{DESCRIPTION}}">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
 
-  <!-- Standard-Styles von der Hauptseite -->
-  <link rel="stylesheet" href="https://unger-warburg.de/styles.css">
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
+
+  <!-- Optional: canonical kannst du später fest setzen, wenn die URL final ist -->
+  <link rel="canonical" href="https://angebote.unger-warburg.de/angebote.html" />
+
+  <!-- Open Graph (Default) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
+  <meta property="og:title" content="{{TITLE}}" />
+  <meta property="og:description" content="{{DESCRIPTION}}" />
+  <meta property="og:url" content="https://angebote.unger-warburg.de/angebote.html" />
+  <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{TITLE}}" />
+  <meta name="twitter:description" content="{{DESCRIPTION}}" />
+  <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
 
   <!-- Nur Ergänzungen für Angebote (Details + Bilder) -->
   <style>
@@ -69,16 +91,14 @@
   </style>
 </head>
 
-<body>
-  <!-- wie Standardseite -->
+<body class="">
   <a class="skip-link" href="#content">Zum Inhalt springen</a>
 
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="container topbar__inner">
       <div class="topbar__left">
         <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
-        <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
+        <a class="toplink" href="https://unger-warburg.de/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
       </div>
       <div class="topbar__right">
         <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
@@ -87,11 +107,10 @@
     </div>
   </div>
 
-  <!-- HEADER / NAV -->
-  <header class="header">
+  <header class="header" id="start">
     <div class="container header__inner">
-      <a class="brand" href="https://unger-warburg.de/">
-        <img src="https://unger-warburg.de/img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
+      <a class="brand" href="https://unger-warburg.de/" aria-label="Startseite">
+        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
       </a>
 
       <nav class="nav" aria-label="Hauptnavigation">
@@ -115,21 +134,44 @@
     </div>
   </header>
 
-  <!-- CONTENT -->
-  <main id="content" class="section">
-    <div class="container">
-      <p class="breadcrumbs"><a href="https://unger-warburg.de/">Start</a> › Angebote</p>
-      <h1 style="margin-top:0">Angebote</h1>
-      <p class="lead" style="margin-top:0">Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.</p>
+  <main id="content">
 
-      {{CONTENT}}
-    </div>
+    <!-- Hero wie Standard, aber für Angebote -->
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumbs">
+          <a href="https://unger-warburg.de/">Start</a> › Angebote
+        </p>
+
+        <h1>Angebote</h1>
+
+        <p class="lead">
+          Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.
+        </p>
+
+        <div class="hero__cta">
+          <a class="btn" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a>
+          <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Direkt schreiben</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content-Bereich wie Standard -->
+    <section class="section">
+      <div class="container">
+        {{CONTENT}}
+      </div>
+    </section>
+
   </main>
 
-  <!-- FOOTER wie Standard (Links + Copyright) -->
   <footer class="footer">
-    <div class="container">
-      <nav class="footer__nav" aria-label="Footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+      </div>
+
+      <div class="footer__links">
         <a href="https://unger-warburg.de/">Start</a>
         <a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
         <a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a>
@@ -139,13 +181,17 @@
         <a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a>
         <a href="https://unger-warburg.de/impressum.html">Impressum</a>
         <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
-      </nav>
+      </div>
 
-      <div class="footer__copy">
-        © Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+      <div class="footer__fine">
+        © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
       </div>
     </div>
   </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 
   <!-- Auto Hoch-/Querformat-Erkennung -->
   <script>
@@ -167,7 +213,6 @@
     })();
   </script>
 
-  <!-- Standard-JS von der Hauptseite -->
-  <script src="https://unger-warburg.de/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
