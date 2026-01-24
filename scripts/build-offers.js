@@ -2,10 +2,10 @@ import fs from "fs";
 import path from "path";
 
 const offersDir = path.join(process.cwd(), "content", "offers");
-
-// Subdomain: / (index.html) + optional /angebote.html
 const outIndex = path.join(process.cwd(), "index.html");
 const outOffers = path.join(process.cwd(), "angebote.html");
+
+/* ================= Helpers ================= */
 
 function escapeHtml(str = "") {
   return String(str)
@@ -36,14 +36,15 @@ function normalizeSpaces(s) {
     .trim();
 }
 
+/* ================= Read offers ================= */
+
 function readOffers() {
   if (!fs.existsSync(offersDir)) return [];
-
   const files = fs.readdirSync(offersDir).filter((f) => f.endsWith(".json"));
+
   let list = files
     .map((file) => {
-      const full = path.join(offersDir, file);
-      const raw = fs.readFileSync(full, "utf8");
+      const raw = fs.readFileSync(path.join(offersDir, file), "utf8");
       try {
         const d = JSON.parse(raw);
         return {
@@ -66,10 +67,9 @@ function readOffers() {
     })
     .filter(Boolean);
 
-  // nur aktive
   list = list.filter((o) => o.active);
 
-  // abgelaufene ausblenden (nur wenn valid_to gesetzt)
+  // abgelaufene ausblenden (wenn valid_to gesetzt)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   list = list.filter((o) => {
@@ -77,7 +77,7 @@ function readOffers() {
     return !d || d >= today;
   });
 
-  // Sortierung: featured zuerst, dann Titel
+  // featured zuerst
   list.sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
     return String(a.title).localeCompare(String(b.title), "de");
@@ -86,7 +86,7 @@ function readOffers() {
   return list;
 }
 
-/* ================= Highlights: kurz vs lang (Details) ================= */
+/* ================= Highlights: kurz vs lang + Feature-Blöcke ================= */
 
 function splitHighlightsSmart(items) {
   const short = [];
@@ -95,11 +95,13 @@ function splitHighlightsSmart(items) {
   for (const it of items || []) {
     const t = normalizeSpaces(it);
     if (!t) continue;
+
+    // lange Herstellertexte in Details
     if (t.length > 140) long.push(t);
     else short.push(t);
   }
 
-  // max 4 Kurzpunkte, Rest wandert in Details
+  // max 4 Kurzpunkte sichtbar
   const shortLimited = short.slice(0, 4);
   const shortOverflow = short.slice(4);
   if (shortOverflow.length) long.unshift(...shortOverflow);
@@ -107,16 +109,24 @@ function splitHighlightsSmart(items) {
   return { short: shortLimited, long };
 }
 
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Zerlegt einen langen Text anhand bekannter Feature-Keywords.
+ * Funktioniert auch, wenn Keywords mehrfach vorkommen.
+ */
 function parseFeatureBlocks(longText) {
   const t = normalizeSpaces(longText);
 
-  // Einmal pflegen, gilt für alle Angebote
+  // Keywords kannst du jederzeit erweitern (gilt dann für alle Angebote)
   const keywords = [
-    "NoFrost",
-    "BioFresh",
-    "DuoCooling",
-    "SmartDevice",
     "BluPerformance",
+    "NoFrost",
+    "DuoCooling",
+    "BioFresh",
+    "SmartDevice",
     "Inverter",
     "DirectDrive",
     "AI DD",
@@ -131,31 +141,41 @@ function parseFeatureBlocks(longText) {
     "AutoDose",
   ];
 
+  // Positionen finden
   const hits = [];
   for (const k of keywords) {
-    const safe = k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`\\b${safe}\\b`, "g");
+    const re = new RegExp(`\\b${escapeRegExp(k)}\\b`, "g");
     let m;
     while ((m = re.exec(t)) !== null) hits.push({ k, i: m.index });
   }
   hits.sort((a, b) => a.i - b.i);
 
+  // Wenn wir weniger als 2 Treffer haben, lohnt Split nicht
   if (hits.length < 2) return null;
 
+  // Duplikate direkt hintereinander vermeiden (z.B. Keyword kommt sehr nah erneut)
+  const dedup = [];
+  for (const h of hits) {
+    if (!dedup.length) dedup.push(h);
+    else if (h.i - dedup[dedup.length - 1].i > 6) dedup.push(h);
+  }
+
   const blocks = [];
-  for (let idx = 0; idx < hits.length; idx++) {
-    const start = hits[idx].i;
-    const end = idx + 1 < hits.length ? hits[idx + 1].i : t.length;
+  for (let idx = 0; idx < dedup.length; idx++) {
+    const start = dedup[idx].i;
+    const end = idx + 1 < dedup.length ? dedup[idx + 1].i : t.length;
 
-    const chunk = t.slice(start, end).trim();
-    const title = hits[idx].k;
+    const title = dedup[idx].k;
+    let chunk = t.slice(start, end).trim();
 
-    const safeTitle = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    let body = chunk.replace(new RegExp(`^${safeTitle}\\b\\s*`), "").trim();
-    body = body.replace(/^–\s*/, "").trim();
+    // Titel am Anfang entfernen
+    chunk = chunk.replace(new RegExp(`^${escapeRegExp(title)}\\b\\s*`), "").trim();
+    // optional: führenden Gedankenstrich nach Titel entfernen
+    chunk = chunk.replace(/^–\s*/, "").trim();
 
-    if (body.length < 20) continue;
-    blocks.push({ title, body });
+    if (chunk.length < 20) continue;
+
+    blocks.push({ title, body: chunk });
   }
 
   return blocks.length ? blocks : null;
@@ -170,6 +190,7 @@ function renderHighlightsSection(o) {
 
   if (!long.length) return shortHtml;
 
+  // Wenn genau ein langer Block: versuche Feature-Blöcke
   let detailsInner = "";
   if (long.length === 1) {
     const blocks = parseFeatureBlocks(long[0]);
@@ -177,10 +198,10 @@ function renderHighlightsSection(o) {
       detailsInner = blocks
         .map(
           (b) => `
-          <div class="feature">
-            <div class="feature__title">${escapeHtml(b.title)}</div>
-            <div class="feature__text">${escapeHtml(b.body)}</div>
-          </div>`
+<div class="feature">
+  <div class="feature__title">${escapeHtml(b.title)}</div>
+  <div class="feature__text">${escapeHtml(b.body)}</div>
+</div>`
         )
         .join("");
     } else {
@@ -191,14 +212,13 @@ function renderHighlightsSection(o) {
   }
 
   return `
-    ${shortHtml}
-    <details class="offer-details">
-      <summary>Details anzeigen</summary>
-      <div class="offer-details__body">
-        ${detailsInner}
-      </div>
-    </details>
-  `;
+${shortHtml}
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    ${detailsInner}
+  </div>
+</details>`;
 }
 
 /* ================= Tile ================= */
@@ -213,18 +233,18 @@ function renderOfferTile(o) {
   if (o.category) metaBits.push(`<span class="pill">${escapeHtml(o.category)}</span>`);
   if (o.valid_to) metaBits.push(`<span class="pill">gültig bis ${escapeHtml(o.valid_to)}</span>`);
   const metaLine = metaBits.length
-    ? `<div class="offer-meta">${metaBits.join("")}</div>`
+    ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">${metaBits.join("")}</div>`
     : "";
 
   const highlightsHtml = renderHighlightsSection(o);
 
   return `
 <article class="tile offer-tile">
-  ${o.featured ? `<div class="pill offer-hot">🔥 Top-Angebot</div>` : ""}
+  ${o.featured ? `<div class="pill" style="margin-bottom:10px;display:inline-block">🔥 Top-Angebot</div>` : ""}
 
   ${metaLine}
 
-  <h3 class="offer-title">${escapeHtml(o.title)}</h3>
+  <h3 style="margin:0 0 10px">${escapeHtml(o.title)}</h3>
 
   ${
     imgSrc
@@ -235,16 +255,16 @@ function renderOfferTile(o) {
       : ""
   }
 
-  <div class="offer-prices">
-    <div class="offer-price">${escapeHtml(priceNow)}</div>
-    ${hasRrp ? `<div class="offer-rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap">
+    <div style="font-weight:1000;font-size:20px;margin:6px 0">${escapeHtml(priceNow)}</div>
+    ${hasRrp ? `<div style="color:var(--muted);font-weight:800">UVP <span style="text-decoration:line-through;margin-left:6px">${escapeHtml(priceRrp)}</span></div>` : ``}
   </div>
 
-  ${o.note ? `<p class="offer-note">${escapeHtml(o.note)}</p>` : ""}
+  ${o.note ? `<p style="margin:10px 0 0;color:var(--muted)">${escapeHtml(o.note)}</p>` : ""}
 
   ${highlightsHtml}
 
-  <div class="offer-cta">
+  <div style="margin-top:14px">
     <a class="btn btn--ghost" href="${escapeHtml(o.cta_link || "https://unger-warburg.de/#kontakt")}">Anfragen</a>
   </div>
 </article>`;
@@ -254,10 +274,6 @@ function renderOfferTile(o) {
 
 function renderPage(offers) {
   const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Template fehlt: ${path.relative(process.cwd(), templatePath)}`);
-  }
-
   const tpl = fs.readFileSync(templatePath, "utf8");
 
   const content = offers.length
@@ -270,17 +286,14 @@ function renderPage(offers) {
     .replaceAll("{{CONTENT}}", content);
 }
 
-function main() {
-  const offers = readOffers();
-  const html = renderPage(offers);
+/* ================= Build ================= */
 
-  // Subdomain: / zeigt direkt Angebote
-  fs.writeFileSync(outIndex, html, "utf8");
-  fs.writeFileSync(outOffers, html, "utf8");
+const offers = readOffers();
+const html = renderPage(offers);
 
-  console.log(`✅ Angebote gebaut: ${offers.length}`);
-  console.log(`   → index.html, angebote.html`);
-}
+fs.writeFileSync(outIndex, html, "utf8");
+fs.writeFileSync(outOffers, html, "utf8");
 
-main();
+console.log(`✅ Angebote gebaut: ${offers.length} (index.html + angebote.html)`);
+
 
