@@ -1,5 +1,6 @@
 backend:
   name: git-gateway
+  repo: rkobusch-privat/unger-warburg-website
   branch: main
 
 media_folder: "assets/offers"
