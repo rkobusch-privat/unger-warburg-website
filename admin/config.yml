@@ -5,8 +5,6 @@ backend:
   base_url: https://api.netlify.com
   auth_endpoint: auth
 
-# admin/config.yml (relevanter Ausschnitt)
-
 media_folder: "assets/offers"
 public_folder: "/assets/offers"
 
@@ -18,70 +16,108 @@ collections:
     create: true
     extension: "json"
     format: "json"
+
+    # 👉 Slug = Dateiname, automatisch aus dem Titel
     slug: "{{slug}}"
+
     identifier_field: "title"
     summary: "{{title}} — {{price}}"
 
     fields:
-      - { label: "Titel", name: "title", widget: "string" }
-
-      - label: "Slug"
-        name: "slug"
+      - label: "Titel"
+        name: "title"
         widget: "string"
-        hint: "URL/Dateiname, z. B. lg-oled-evo-65g4 (nur a-z, 0-9, -)"
-        pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "Bitte nur Kleinbuchstaben, Zahlen und Bindestriche verwenden."]
+        hint: "Produktname inkl. Modell, z. B. „Liebherr CBNsda 572i-22 Kühl-Gefrierkombination“"
 
       - label: "Preis"
         name: "price"
         widget: "string"
-        hint: "z. B. 2.499 €"
+        hint: "z. B. 999,00 €"
 
       - label: "UVP"
         name: "uvp"
         widget: "string"
         required: false
-        hint: "optional, z. B. 3.499 €"
+        hint: "optional, z. B. 1.599,00 €"
 
       - label: "Bild"
         name: "image"
         widget: "image"
-        hint: "Wird unter /assets/offers abgelegt"
         choose_url: false
+        hint: "Produktbild, wird unter /assets/offers abgelegt"
 
-      - label: "Teaser"
+      - label: "Kurztext (optional)"
         name: "teaser"
         widget: "string"
         required: false
-        hint: "Optionaler 1-Satz-Teaser (max. 120 Zeichen)"
-        pattern: ["^.{0,120}$", "Maximal 120 Zeichen."]
+        hint: "1 kurzer Satz für die Karte (wie früher unter dem Preis)"
 
-      - label: "Bulletpoints (Karte)"
+      - label: "Bulletpoints (Kurzinfos)"
         name: "bullets"
         widget: "list"
         min: 5
         max: 10
-        hint: "5–10 kurze Stichpunkte (eine Zeile, keine Sätze mit Punkt)"
+        hint: "5–10 kurze Fakten (z. B. NoFrost, 258 l, Energieverbrauch 116 kWh/Jahr)"
         field:
-          { label: "Bullet", name: "bullet", widget: "string" }
+          label: "Bullet"
+          name: "bullet"
+          widget: "string"
 
       - label: "Features (Details)"
         name: "features"
         widget: "list"
+        required: false
         min: 0
         max: 10
-        required: false
         collapsed: true
         summary: "{{fields.title}}"
-        hint: "Neuer Standard: echte Feature-Blöcke (Titel + Kurzbeschreibung). Wenn vorhanden, werden highlights ignoriert."
+        hint: "Ausführliche Feature-Blöcke für den Detailbereich (neu). Wenn gefüllt, werden Highlights ignoriert."
         fields:
-          - { label: "Überschrift", name: "title", widget: "string" }
-          - label: "Kurzbeschreibung"
+          - label: "Überschrift"
+            name: "title"
+            widget: "string"
+          - label: "Beschreibung"
             name: "description"
             widget: "text"
-            hint: "1–2 Sätze, kein Bullet-Style"
+            hint: "1–2 Sätze, Nutzen erklären (kein Bullet-Stil)"
 
-      - label: "Highlights (Legacy/Fallback)"
+      - label: "Highlights (Altbestand / Fallback)"
         name: "highlights"
         widget: "text"
         required: false
-        hint: "Nur für Altbestand. Wird nur genutzt, wenn features leer/nicht vorhanden sind."
+        hint: "Nur für alte Angebote. Wird nur genutzt, wenn keine Features vorhanden sind."
+
+      - label: "Kategorie"
+        name: "category"
+        widget: "string"
+        required: false
+        hint: "z. B. Kühlen/Gefrieren, Waschen, TV"
+
+      - label: "Gültig bis"
+        name: "valid_to"
+        widget: "date"
+        required: false
+        format: "YYYY-MM-DD"
+
+      - label: "Top-Angebot"
+        name: "featured"
+        widget: "boolean"
+        required: false
+        default: false
+
+      - label: "Hinweis (optional)"
+        name: "note"
+        widget: "string"
+        required: false
+        hint: "Kleiner Zusatztext unter dem Preis (optional)"
+
+      - label: "CTA-Link"
+        name: "cta_link"
+        widget: "string"
+        required: false
+        default: "https://unger-warburg.de/#kontakt"
+
+      - label: "Aktiv"
+        name: "active"
+        widget: "boolean"
+        default: true
