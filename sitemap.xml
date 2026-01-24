@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.unger-warburg.de/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/haushaltsgeraete-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/tv-audio-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/handy-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/computer-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/service-reparatur-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- NEU: Satellit & Internet -->
+  <url>
+    <loc>https://www.unger-warburg.de/satellit-internet-warburg.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/impressum.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.20</priority>
+  </url>
+
+  <url>
+    <loc>https://www.unger-warburg.de/datenschutz.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.20</priority>
+  </url>
+</urlset>
