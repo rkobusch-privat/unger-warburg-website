@@ -2,7 +2,10 @@ import fs from "fs";
 import path from "path";
 
 const offersDir = path.join(process.cwd(), "content", "offers");
-const outFile = path.join(process.cwd(), "angebote.html");
+
+// Wir bauen für die Subdomain: / (index.html) und optional auch /angebote.html
+const outIndex = path.join(process.cwd(), "index.html");
+const outOffers = path.join(process.cwd(), "angebote.html");
 
 function escapeHtml(str = "") {
   return String(str)
@@ -22,53 +25,57 @@ function formatEUR(value) {
 
 function parseDateISO(dateStr) {
   if (!dateStr) return null;
-  // Decap datetime mit format YYYY-MM-DD (ohne Uhrzeit) -> direkt nutzbar
-  const d = new Date(dateStr + "T00:00:00");
+  // Decap config: format "YYYY-MM-DD"
+  const d = new Date(`${dateStr}T00:00:00`);
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
 function readOffers() {
   if (!fs.existsSync(offersDir)) return [];
 
-  const files = fs.readdirSync(offersDir).filter(f => f.endsWith(".json"));
+  const files = fs.readdirSync(offersDir).filter((f) => f.endsWith(".json"));
 
-  const offers = files.map(file => {
-    const raw = fs.readFileSync(path.join(offersDir, file), "utf8");
-    let data = {};
-    try {
-      data = JSON.parse(raw);
-    } catch (e) {
-      console.warn(`⚠️ JSON fehlerhaft: ${file}`);
-      return null;
-    }
+  const offers = files
+    .map((file) => {
+      const full = path.join(offersDir, file);
+      const raw = fs.readFileSync(full, "utf8");
 
-    return {
-      title: data.title ?? "",
-      category: data.category ?? "",
-      price: data.price,
-      rrp: data.rrp,
-      highlights: Array.isArray(data.highlights) ? data.highlights : [],
-      image: data.image ?? "",
-      valid_to: data.valid_to ?? "",
-      featured: data.featured === true,
-      note: data.note ?? "",
-      cta_link: data.cta_link ?? "/kontakt.html",
-      active: data.active !== false
-    };
-  }).filter(Boolean);
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        console.warn(`⚠️ Ungültiges JSON: ${file}`);
+        return null;
+      }
 
-  // Filtern: nur active
-  let list = offers.filter(o => o.active);
+      return {
+        title: data.title ?? "",
+        category: data.category ?? "",
+        price: data.price,
+        rrp: data.rrp,
+        highlights: Array.isArray(data.highlights) ? data.highlights : [],
+        image: data.image ?? "",
+        valid_to: data.valid_to ?? "",
+        featured: data.featured === true,
+        note: data.note ?? "",
+        cta_link: data.cta_link ?? "https://unger-warburg.de/#kontakt",
+        active: data.active !== false,
+      };
+    })
+    .filter(Boolean);
 
-  // Optional: abgelaufene ausblenden (wenn valid_to gesetzt und < heute)
+  // Nur aktive
+  let list = offers.filter((o) => o.active);
+
+  // Optional: abgelaufene ausblenden (nur wenn valid_to gesetzt)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  list = list.filter(o => {
+  list = list.filter((o) => {
     const d = parseDateISO(o.valid_to);
     return !d || d >= today;
   });
 
-  // Sortierung: featured zuerst, dann Titel
+  // Sortierung: featured zuerst, dann nach Titel
   list.sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
     return String(a.title).localeCompare(String(b.title), "de");
@@ -77,264 +84,101 @@ function readOffers() {
   return list;
 }
 
-function renderOfferCard(o) {
+/**
+ * WICHTIG: Wir nutzen eure bestehenden Styles/Klassen:
+ * - grid
+ * - tile
+ * - btn / btn--ghost
+ * - pill
+ * Damit sieht das nicht "fremd" aus, sondern wie eure Website.
+ */
+function renderOfferTile(o) {
   const imgSrc = o.image ? (o.image.startsWith("/") ? o.image : "/" + o.image) : "";
   const priceNow = formatEUR(o.price);
   const priceRrp = o.rrp ? formatEUR(o.rrp) : "";
   const hasRrp = Boolean(o.rrp);
 
-  const highlights = (o.highlights?.length)
-    ? `<ul class="list">${o.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
-    : ``;
+  const highlights = o.highlights?.length
+    ? `<ul class="list">${o.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
+    : "";
 
-  const tags = `
-    <div class="offer__meta">
-      ${o.category ? `<span class="tag">${escapeHtml(o.category)}</span>` : ``}
-      ${o.valid_to ? `<span class="tag">gültig bis ${escapeHtml(o.valid_to)}</span>` : ``}
-      ${o.featured ? `<span class="tag tag--hot">Top-Angebot</span>` : ``}
-    </div>
-  `;
+  const metaLine = [
+    o.category ? `<span class="pill">${escapeHtml(o.category)}</span>` : "",
+    o.valid_to ? `<span class="pill">gültig bis ${escapeHtml(o.valid_to)}</span>` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return `
-    <article class="offer">
-      ${imgSrc ? `<img class="offer__img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(o.title)}" loading="lazy">` : ``}
+<article class="tile">
+  ${o.featured ? `<div class="pill" style="margin-bottom:10px">🔥 Top-Angebot</div>` : ""}
 
-      <div>
-        ${tags}
-        <h3 class="offer__title">${escapeHtml(o.title)}</h3>
+  ${metaLine ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">${metaLine}</div>` : ""}
 
-        <div class="offer__price">${escapeHtml(priceNow)}</div>
-        ${hasRrp ? `<div class="offer__rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
+  <h3 style="margin:0 0 10px">${escapeHtml(o.title)}</h3>
 
-        ${highlights}
+  ${
+    imgSrc
+      ? `<img src="${escapeHtml(imgSrc)}"
+              alt="${escapeHtml(o.title)}"
+              style="width:100%;height:220px;object-fit:cover;border-radius:14px;border:1px solid var(--line);margin:0 0 12px"
+              loading="lazy">`
+      : ""
+  }
 
-        ${o.note ? `<p class="offer__note">${escapeHtml(o.note)}</p>` : ``}
+  <p style="margin:0 0 6px;font-weight:1000;font-size:20px">
+    ${escapeHtml(priceNow)}
+  </p>
 
-        <p style="margin-top:12px">
-          <a class="btn btn--ghost" href="${escapeHtml(o.cta_link || "/#kontakt")}">Beratung / Anfragen</a>
-        </p>
-      </div>
-    </article>
-  `;
+  ${
+    hasRrp
+      ? `<p style="margin:0 0 12px;color:var(--muted);font-weight:800">
+           UVP <span style="text-decoration:line-through;margin-left:6px">${escapeHtml(priceRrp)}</span>
+         </p>`
+      : ""
+  }
+
+  ${highlights}
+
+  ${o.note ? `<p style="margin-top:10px;color:var(--muted)">${escapeHtml(o.note)}</p>` : ""}
+
+  <div style="margin-top:14px">
+    <a class="btn btn--ghost" href="${escapeHtml(o.cta_link || "https://unger-warburg.de/#kontakt")}">Anfragen</a>
+  </div>
+</article>`;
 }
-
 
 function renderPage(offers) {
   const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(
+      `Template fehlt: ${path.relative(process.cwd(), templatePath)} (bitte templates/offers-page.html anlegen)`
+    );
+  }
+
   const tpl = fs.readFileSync(templatePath, "utf8");
 
-  const items = offers.length
+  const content = offers.length
     ? `<div class="grid">${offers.map(renderOfferTile).join("\n")}</div>`
-    : `<div class="tile"><h3>Aktuell sind keine Angebote online.</h3><p>Schau später nochmal vorbei oder ruf uns an.</p></div>`;
+    : `<div class="tile"><h3 style="margin:0 0 8px">Aktuell sind keine Angebote online.</h3><p style="margin:0;color:var(--muted)">Schau später nochmal vorbei oder ruf uns an.</p></div>`;
 
   return tpl
     .replaceAll("{{TITLE}}", "Angebote | Unger Haushalts- & Medientechnik")
-    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – gepflegt im CMS, automatisch aktualisiert.")
-    .replaceAll("{{CONTENT}}", items);
+    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
+    .replaceAll("{{CONTENT}}", content);
 }
 
+function main() {
+  const offers = readOffers();
+  const html = renderPage(offers);
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    line-height:1.5;
-    color:var(--text);
-    background: linear-gradient(180deg, var(--bg-soft), var(--bg) 320px);
-  }
+  fs.writeFileSync(outIndex, html, "utf8");
+  fs.writeFileSync(outOffers, html, "utf8");
 
-  a{color:inherit}
-
-  header{
-    padding: 34px 16px 22px;
-    border-bottom:1px solid rgba(0,0,0,.06);
-    background: rgba(255,255,255,.75);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
-
-  .wrap{max-width:var(--max);margin:0 auto;}
-  h1{margin:0 0 6px;font-size:30px;letter-spacing:-0.02em}
-  .sub{margin:0;color:var(--muted);max-width: 70ch}
-
-  main{padding: 22px 16px 46px;}
-
-  /* Grid */
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--gap);
-  }
-  @media (max-width: 1020px){ .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 660px){ .grid{ grid-template-columns: 1fr; } }
-
-  /* Card */
-  .card{
-    border:1px solid var(--border);
-    border-radius: var(--radius);
-    background: rgba(255,255,255,.92);
-    box-shadow: var(--shadow);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .card:hover{ transform: translateY(-2px); box-shadow: var(--shadow2); }
-
-  .media{ position:relative; }
-  .card__img{
-    width:100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display:block;
-    background:#eceef2;
-  }
-  .card__img--placeholder{
-    background: repeating-linear-gradient(135deg, #eef0f4, #eef0f4 14px, #f6f7fa 14px, #f6f7fa 28px);
-  }
-
-  .badge{
-    position:absolute;
-    top: 12px;
-    left: 12px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(10,102,255,.10);
-    border: 1px solid rgba(10,102,255,.22);
-    color: #0a3fb5;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: .02em;
-    z-index: 2;
-  }
-
-  .card__body{
-    padding: 14px 14px 16px;
-    display:flex;
-    flex-direction:column;
-    gap: 10px;
-    flex:1;
-  }
-
-  .meta{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 10px;
-    flex-wrap:wrap;
-  }
-  .meta__pill{
-    display:inline-flex;
-    align-items:center;
-    padding: 5px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,.08);
-    background: rgba(255,255,255,.8);
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .meta__hint{
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .card__title{
-    margin:0;
-    font-size: 18px;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
-  }
-
-  .price{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    gap: 10px;
-    flex-wrap:wrap;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: #fff;
-    border: 1px solid rgba(0,0,0,.06);
-  }
-  .price__now{
-    font-weight: 900;
-    font-size: 20px;
-    letter-spacing:-0.01em;
-  }
-  .price__rrp{
-    font-size: 12px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .price__rrp span{
-    text-decoration: line-through;
-    margin-left: 6px;
-  }
-
-  .hl{
-    margin: 0;
-    padding-left: 18px;
-    color: #2b2f3a;
-  }
-  .hl li{ margin: 3px 0; }
-
-  .note{
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-    padding: 10px 12px;
-    border-left: 3px solid rgba(10,102,255,.25);
-    background: rgba(10,102,255,.06);
-    border-radius: 12px;
-  }
-
-  .cta{ margin-top:auto; }
-
-  .btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap: 8px;
-    padding: 11px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(0,0,0,.10);
-    background: #111216;
-    color: #fff;
-    text-decoration:none;
-    font-weight: 700;
-    font-size: 14px;
-  }
-  .btn:hover{ filter: brightness(1.05); }
-
-  .empty{
-    padding: 22px;
-    border: 1px dashed rgba(0,0,0,.18);
-    border-radius: var(--radius);
-    color: var(--muted);
-    background: rgba(255,255,255,.7);
-  }
-</style>
-
-</head>
-<body>
-  <header>
-    <div class="wrap">
-      <h1>Angebote</h1>
-      <p class="sub">Aktuelle Angebote – im CMS gepflegt, automatisch hier angezeigt.</p>
-    </div>
-  </header>
-
-  <main>
-    <div class="wrap">
-      ${offers.length ? `<section class="grid">${cards}</section>` : `<div class="empty">Aktuell sind keine Angebote online.</div>`}
-    </div>
-  </main>
-</body>
-</html>`;
+  console.log(`✅ Angebote gebaut: ${offers.length} Einträge`);
+  console.log(`   → ${path.relative(process.cwd(), outIndex)}`);
+  console.log(`   → ${path.relative(process.cwd(), outOffers)}`);
 }
 
-const offers = readOffers();
-fs.writeFileSync(outFile, renderPage(offers), "utf8");
-console.log(`✅ angebote.html erzeugt (${offers.length} Angebote)`);
+main();
+
