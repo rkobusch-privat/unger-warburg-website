@@ -42,6 +42,21 @@ function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
 
+/* ================= Parsing helper for German formatted EUR strings ================= */
+
+function parseEURString(str) {
+  if (!str) return NaN;
+  // Entferne alles außer Ziffern, Punkt, Komma, Minus
+  let cleaned = String(str).replace(/[^\d,.-]/g, "");
+  // Deutsche Schreibweise: Punkt Tausender, Komma Dezimal → erst Tausender weg, dann Komma zu Punkt
+  // Aber wenn z.B. "2.499 €" → "2.499" → remove '.' → "2499"
+  // und falls "2.499,50" → remove '.' → "2499,50" → replace ',' → '.'
+  cleaned = cleaned.replace(/\./g, "");
+  cleaned = cleaned.replace(/,/g, ".");
+  const num = parseFloat(cleaned);
+  return Number.isFinite(num) ? num : NaN;
+}
+
 /* ================= Normalizer (new schema) ================= */
 
 function normalizeBullets(bulletsRaw) {
@@ -245,7 +260,7 @@ function renderHighlightsLegacy(o) {
   `;
 }
 
-/* ================= Details rendering (bullets only here) ================= */
+/* ================= Details rendering ================= */
 
 function renderBulletsList(o, limit = 10) {
   const bullets = normalizeBullets(o.bullets).slice(0, limit);
@@ -263,7 +278,7 @@ function renderDetails(o) {
 
   let bodyHtml = "";
 
-  // Bullets (wenn vorhanden) als erster Block in Details
+  // Bullets als erster Block in Details, falls vorhanden
   if (bulletsHtml) {
     bodyHtml += `
       <div class="offer-details__bullets">
@@ -272,7 +287,7 @@ function renderDetails(o) {
     `;
   }
 
-  // Features haben Vorrang, Legacy ist Fallback
+  // Features haben Vorrang, Legacy Fallback
   if (features.length > 0) {
     bodyHtml += `
       <div class="offer-details__features">
@@ -320,14 +335,29 @@ function renderTile(o) {
   const priceText = formatPrice(o.price);
   const uvpText = formatPrice(o.uvp);
 
-  // Karte bleibt clean (wie vorher): optional teaser / note als kurzer Text
+  // Karte: teaser/note wie gehabt
   const teaserHtml = o.teaser ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.teaser)}</p>` : "";
   const noteHtml = o.note ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.note)}</p>` : "";
 
-  return `
-<article class="tile">
-  ${o.featured ? `<div class="pill">🔥 Top-Angebot</div>` : ""}
+  /* ===== Spar‑Badge berechnen ===== */
+  let badgeHtml = "";
+  // Parse Preis + UVP als Zahlen, falls möglich
+  const priceNum = parseEURString(priceText);
+  const uvpNum = parseEURString(uvpText);
 
+  if (!Number.isNaN(priceNum) && !Number.isNaN(uvpNum) && uvpNum > priceNum) {
+    const perc = Math.round(((uvpNum - priceNum) / uvpNum) * 100);
+    if (perc > 0) {
+      badgeHtml = `<span class="offer-badge">-${perc}%</span>`;
+    }
+  }
+
+  /* ===== Tile container class für Featured ===== */
+  const featuredClass = o.featured ? "offer-card--featured" : "";
+
+  return `
+<article class="tile ${featuredClass}">
+  ${badgeHtml}
   ${meta.length ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0">${meta.join("")}</div>` : ""}
 
   <h3>${escapeHtml(o.title)}</h3>
@@ -338,7 +368,7 @@ function renderTile(o) {
     <strong style="font-size:20px">${escapeHtml(priceText)}</strong>
     ${
       uvpText
-        ? `<span class="rrp" style="color:var(--muted);font-weight:800">UVP <s>${escapeHtml(uvpText)}</s></span>`
+        ? `<span class="offer-rrp">UVP <span>${escapeHtml(uvpText)}</span></span>`
         : ""
     }
   </div>
@@ -348,7 +378,7 @@ function renderTile(o) {
 
   ${renderDetails(o)}
 
-  <a class="btn btn--ghost" href="${escapeHtml(o.cta_link)}">Anfragen</a>
+  <a class="btn btn--ghost offer-cta" href="${escapeHtml(o.cta_link)}">Anfragen</a>
 </article>`;
 }
 
@@ -358,12 +388,12 @@ function renderPage(offers) {
   const tpl = fs.readFileSync(path.join(ROOT, "templates", "offers-page.html"), "utf8");
 
   const content = offers.length
-    ? `<div class="grid">${offers.map(renderTile).join("")}</div>`
+    ? `<div class="grid offers-grid">${offers.map(renderTile).join("")}</div>`
     : `<p>Aktuell keine Angebote.</p>`;
 
   return tpl
     .replaceAll("{{TITLE}}", "Angebote | Unger Haushalts- & Medientechnik")
-    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – automatisch aus dem CMS.")
+    .replaceAll("{{DESCRIPTION}}", "Attraktive Angebote zu Top-Preisen – direkt in Warburg")
     .replaceAll("{{CONTENT}}", content);
 }
 
