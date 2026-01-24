@@ -1,0 +1,27 @@
+backend:
+  name: git-gateway
+  branch: master
+
+media_folder: "assets/offers"
+public_folder: "/assets/offers"
+
+collections:
+  - name: "offers"
+    label: "Angebote"
+    folder: "content/offers"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "json"
+    format: "json"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Kategorie", name: "category", widget: "select", options: ["TV", "Audio", "Waschmaschine", "Trockner", "Kühlen/Gefrieren", "Smartphone", "Küche", "Zubehör", "Sonstiges"] }
+      - { label: "Preis (EUR)", name: "price", widget: "number", value_type: "float", min: 0 }
+      - { label: "UVP (optional)", name: "rrp", widget: "number", required: false, value_type: "float", min: 0 }
+      - { label: "Kurzbeschreibung", name: "highlights", widget: "list", field: { label: "Punkt", name: "item", widget: "string" } }
+      - { label: "Bild", name: "image", widget: "image", required: false }
+      - { label: "Gültig bis", name: "valid_to", widget: "datetime", format: "YYYY-MM-DD", time_format: false, required: false }
+      - { label: "Top-Angebot", name: "featured", widget: "boolean", default: false, required: false }
+      - { label: "Hinweistext", name: "note", widget: "string", required: false }
+      - { label: "CTA-Link", name: "cta_link", widget: "string", required: false, default: "/kontakt.html" }
+      - { label: "Aktiv", name: "active", widget: "boolean", default: true }
