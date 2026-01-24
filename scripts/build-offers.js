@@ -140,17 +140,56 @@ function parseFeatureBlocks(longText) {
     "AutoDose",
   ];
 
-  // Nur echte Überschrift-Starts erkennen:
-  // Start oder direkt nach Satzende (. ! ?) + Keyword + optional "–" / "-" / ":" danach
+  // echte Abschnitts-Starts finden (nur nach Satzende oder Textanfang)
   const hits = [];
   for (const k of keywords) {
     const kEsc = escapeRegExp(k);
     const re = new RegExp(`(^|[.!?]\\s+)(${kEsc})(\\s*(?:–|-|:)\\s+|\\s+)`, "g");
     let m;
     while ((m = re.exec(t)) !== null) {
-      const idx = m.index + m[1].length; // Startposition vom Keyword
+      const idx = m.index + m[1].length;
       hits.push({ k, i: idx });
     }
+  }
+
+  hits.sort((a, b) => a.i - b.i);
+  if (hits.length < 2) return null;
+
+  const blocks = [];
+  for (let i = 0; i < hits.length; i++) {
+    const start = hits[i].i;
+    const end = i + 1 < hits.length ? hits[i + 1].i : t.length;
+
+    const title = hits[i].k;
+    let body = t.slice(start, end).trim();
+
+    // Titel am Anfang entfernen
+    body = body.replace(new RegExp(`^${escapeRegExp(title)}\\b\\s*`), "").trim();
+    body = body.replace(/^(?:–|-|:)\s*/, "").trim();
+
+    // ALLE weiteren Vorkommen des Titels entfernen
+    // (aber SmartDevice-App o.ä. behalten)
+    body = body.replace(
+      new RegExp(`\\b${escapeRegExp(title)}\\b(?!-)`, "g"),
+      ""
+    );
+
+    // Text aufräumen
+    body = body
+      .replace(/\s{2,}/g, " ")
+      .replace(/\s+–\s+/g, " – ")
+      .replace(/Das ist\s+–/g, "Das ist")
+      .replace(/Dank\s+–/g, "Dank")
+      .trim();
+
+    if (body.length < 20) continue;
+
+    blocks.push({ title, body });
+  }
+
+  return blocks.length ? blocks : null;
+}
+
   }
 
   hits.sort((a, b) => a.i - b.i);
