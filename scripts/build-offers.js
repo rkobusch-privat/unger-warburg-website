@@ -49,20 +49,17 @@ function normalizeBullets(bulletsRaw) {
   // Toleriert: [{ bullet: "Text" }, ...]
   const arr = toArray(bulletsRaw);
 
-  const bullets = arr
+  return arr
     .map((item) => {
       if (typeof item === "string") return item.trim();
       if (item && typeof item === "object") {
         if (typeof item.bullet === "string") return item.bullet.trim();
-        // generischer Fallback: erstes string-Feld
         const firstString = Object.values(item).find((v) => typeof v === "string");
         return typeof firstString === "string" ? firstString.trim() : "";
       }
       return "";
     })
     .filter(Boolean);
-
-  return bullets;
 }
 
 function normalizeFeatures(featuresRaw) {
@@ -109,12 +106,10 @@ function readOffers() {
         const uvp = d.uvp ?? d.rrp;
 
         return {
-          // neue Basis
           title: d.title || "",
           slug: d.slug || "",
           teaser: d.teaser || "",
 
-          // optional/alt
           category: d.category || "",
 
           // Preise alt/neu
@@ -126,17 +121,14 @@ function readOffers() {
           features: d.features,
           highlights: normalizeHighlights(d.highlights),
 
-          // Medien
           image: d.image || "",
 
-          // Laufzeit/Flags alt
           valid_to: d.valid_to || "",
           featured: d.featured === true,
           note: d.note || "",
           cta_link: d.cta_link || "https://unger-warburg.de/#kontakt",
           active: d.active !== false,
 
-          // Debug
           __file: file,
         };
       } catch {
@@ -146,10 +138,8 @@ function readOffers() {
     })
     .filter(Boolean);
 
-  // active
   offers = offers.filter((o) => o.active);
 
-  // valid_to
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   offers = offers.filter((o) => {
@@ -157,13 +147,11 @@ function readOffers() {
     return !d || d >= today;
   });
 
-  // Sort: featured zuerst, dann Titel
   offers.sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
     return a.title.localeCompare(b.title, "de");
   });
 
-  // Warnungen (nicht blockierend)
   for (const o of offers) validateOffer(o);
 
   return offers;
@@ -196,7 +184,6 @@ function highlightToText(h) {
   if (typeof h === "string") return h;
   if (h && typeof h === "object") {
     if (typeof h.item === "string") return h.item;
-    // falls irgend ein Feld ein String ist, nimm den ersten
     for (const k of Object.keys(h)) {
       if (typeof h[k] === "string") return h[k];
     }
@@ -204,13 +191,11 @@ function highlightToText(h) {
   return "";
 }
 
-// macht aus einem langen Herstellertext mehrere lesbare Absätze (optional) – NUR legacy
 function splitIntoParagraphs(text) {
   const t = String(text || "").replace(/\s+/g, " ").trim();
   if (!t) return [];
 
   const parts = t.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ])/g);
-
   if (parts.length <= 1) return [t];
 
   const merged = [];
@@ -232,7 +217,6 @@ function renderHighlightsLegacy(o) {
     .map((x) => String(x || "").trim())
     .filter(Boolean);
 
-  // Regel: ALLES was länger als 120 Zeichen ist -> Details (legacy-only)
   const short = [];
   const long = [];
 
@@ -241,7 +225,6 @@ function renderHighlightsLegacy(o) {
     else short.push(t);
   }
 
-  // max 4 short Punkte sichtbar
   const shortLimited = short.slice(0, 4);
   const shortOverflow = short.slice(4);
   if (shortOverflow.length) long.unshift(...shortOverflow);
@@ -262,7 +245,7 @@ function renderHighlightsLegacy(o) {
   `;
 }
 
-/* ================= New details rendering ================= */
+/* ================= Details rendering (bullets only here) ================= */
 
 function renderBulletsList(o, limit = 10) {
   const bullets = normalizeBullets(o.bullets).slice(0, limit);
@@ -271,27 +254,27 @@ function renderBulletsList(o, limit = 10) {
 }
 
 function renderDetails(o) {
-  // In Details sollen Bullets AUCH erscheinen (oben)
   const bulletsHtml = renderBulletsList(o, 10);
-  const bulletsBlock = bulletsHtml
-    ? `
-      <div class="offer-details__bullets">
-        <div class="offer-details__label" style="font-weight:800;margin:0 0 6px 0">Kurz & knapp</div>
-        ${bulletsHtml}
-      </div>
-    `
-    : "";
-
   const features = normalizeFeatures(o.features);
   const legacy = normalizeHighlights(o.highlights);
 
-  // Wenn weder Features noch Legacy vorhanden sind, dann auch kein <details> anzeigen
-  if (!bulletsBlock && features.length === 0 && legacy.length === 0) return "";
+  // Wenn nichts für Details da ist, kein <details>
+  if (!bulletsHtml && features.length === 0 && legacy.length === 0) return "";
 
-  // Body-Content: Features haben Vorrang, Legacy ist Fallback
   let bodyHtml = "";
+
+  // Bullets (wenn vorhanden) als erster Block in Details
+  if (bulletsHtml) {
+    bodyHtml += `
+      <div class="offer-details__bullets">
+        ${bulletsHtml}
+      </div>
+    `;
+  }
+
+  // Features haben Vorrang, Legacy ist Fallback
   if (features.length > 0) {
-    bodyHtml = `
+    bodyHtml += `
       <div class="offer-details__features">
         ${features
           .map(
@@ -306,7 +289,7 @@ function renderDetails(o) {
       </div>
     `;
   } else if (legacy.length > 0) {
-    bodyHtml = `
+    bodyHtml += `
       <div class="offer-details__legacy">
         ${renderHighlightsLegacy({ ...o, highlights: legacy })}
       </div>
@@ -317,7 +300,6 @@ function renderDetails(o) {
     <details class="offer-details">
       <summary>Details anzeigen</summary>
       <div class="offer-details__body">
-        ${bulletsBlock}
         ${bodyHtml}
       </div>
     </details>
@@ -338,11 +320,9 @@ function renderTile(o) {
   const priceText = formatPrice(o.price);
   const uvpText = formatPrice(o.uvp);
 
+  // Karte bleibt clean (wie vorher): optional teaser / note als kurzer Text
   const teaserHtml = o.teaser ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.teaser)}</p>` : "";
   const noteHtml = o.note ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.note)}</p>` : "";
-
-  // Karte: Bullets direkt sichtbar (ohne Details)
-  const bulletsOnCard = renderBulletsList(o, 10);
 
   return `
 <article class="tile">
@@ -365,8 +345,6 @@ function renderTile(o) {
 
   ${teaserHtml}
   ${noteHtml}
-
-  ${bulletsOnCard}
 
   ${renderDetails(o)}
 
