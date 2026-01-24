@@ -2,10 +2,10 @@ import fs from "fs";
 import path from "path";
 
 const offersDir = path.join(process.cwd(), "content", "offers");
+
+// Subdomain: / (index.html) + optional /angebote.html
 const outIndex = path.join(process.cwd(), "index.html");
 const outOffers = path.join(process.cwd(), "angebote.html");
-
-/* ================= HELPERS ================= */
 
 function escapeHtml(str = "") {
   return String(str)
@@ -20,10 +20,7 @@ function formatEUR(value) {
   if (value === null || value === undefined || value === "") return "";
   const num = Number(value);
   if (!Number.isFinite(num)) return "";
-  return new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(num);
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(num);
 }
 
 function parseDateISO(dateStr) {
@@ -39,55 +36,59 @@ function normalizeSpaces(s) {
     .trim();
 }
 
-/* ================= READ OFFERS ================= */
-
 function readOffers() {
   if (!fs.existsSync(offersDir)) return [];
 
-  const files = fs.readdirSync(offersDir).filter(f => f.endsWith(".json"));
+  const files = fs.readdirSync(offersDir).filter((f) => f.endsWith(".json"));
+  let list = files
+    .map((file) => {
+      const full = path.join(offersDir, file);
+      const raw = fs.readFileSync(full, "utf8");
+      try {
+        const d = JSON.parse(raw);
+        return {
+          title: d.title ?? "",
+          category: d.category ?? "",
+          price: d.price,
+          rrp: d.rrp,
+          highlights: Array.isArray(d.highlights) ? d.highlights : [],
+          image: d.image ?? "",
+          valid_to: d.valid_to ?? "",
+          featured: d.featured === true,
+          note: d.note ?? "",
+          cta_link: d.cta_link ?? "https://unger-warburg.de/#kontakt",
+          active: d.active !== false,
+        };
+      } catch {
+        console.warn(`⚠️ Ungültiges JSON: ${file}`);
+        return null;
+      }
+    })
+    .filter(Boolean);
 
-  let list = files.map(file => {
-    const raw = fs.readFileSync(path.join(offersDir, file), "utf8");
-    try {
-      const d = JSON.parse(raw);
-      return {
-        title: d.title,
-        category: d.category,
-        price: d.price,
-        rrp: d.rrp,
-        highlights: Array.isArray(d.highlights) ? d.highlights : [],
-        image: d.image,
-        valid_to: d.valid_to,
-        featured: d.featured === true,
-        note: d.note,
-        cta_link: d.cta_link || "https://unger-warburg.de/#kontakt",
-        active: d.active !== false,
-      };
-    } catch {
-      return null;
-    }
-  }).filter(Boolean);
+  // nur aktive
+  list = list.filter((o) => o.active);
 
-  list = list.filter(o => o.active);
-
+  // abgelaufene ausblenden (nur wenn valid_to gesetzt)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  list = list.filter(o => {
+  list = list.filter((o) => {
     const d = parseDateISO(o.valid_to);
     return !d || d >= today;
   });
 
+  // Sortierung: featured zuerst, dann Titel
   list.sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
-    return a.title.localeCompare(b.title, "de");
+    return String(a.title).localeCompare(String(b.title), "de");
   });
 
   return list;
 }
 
-/* ================= HIGHLIGHTS ================= */
+/* ================= Highlights: kurz vs lang (Details) ================= */
 
-function splitHighlights(items) {
+function splitHighlightsSmart(items) {
   const short = [];
   const long = [];
 
@@ -98,42 +99,132 @@ function splitHighlights(items) {
     else short.push(t);
   }
 
-  return {
-    short: short.slice(0, 4),
-    long: long.concat(short.slice(4)),
-  };
+  // max 4 Kurzpunkte, Rest wandert in Details
+  const shortLimited = short.slice(0, 4);
+  const shortOverflow = short.slice(4);
+  if (shortOverflow.length) long.unshift(...shortOverflow);
+
+  return { short: shortLimited, long };
 }
 
-function renderHighlights(o) {
-  const { short, long } = splitHighlights(o.highlights);
+function parseFeatureBlocks(longText) {
+  const t = normalizeSpaces(longText);
+
+  // Einmal pflegen, gilt für alle Angebote
+  const keywords = [
+    "NoFrost",
+    "BioFresh",
+    "DuoCooling",
+    "SmartDevice",
+    "BluPerformance",
+    "Inverter",
+    "DirectDrive",
+    "AI DD",
+    "NeoQLED",
+    "QLED",
+    "OLED",
+    "HDR",
+    "Dolby Vision",
+    "Dolby Atmos",
+    "Steam",
+    "SteamCare",
+    "AutoDose",
+  ];
+
+  const hits = [];
+  for (const k of keywords) {
+    const safe = k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`\\b${safe}\\b`, "g");
+    let m;
+    while ((m = re.exec(t)) !== null) hits.push({ k, i: m.index });
+  }
+  hits.sort((a, b) => a.i - b.i);
+
+  if (hits.length < 2) return null;
+
+  const blocks = [];
+  for (let idx = 0; idx < hits.length; idx++) {
+    const start = hits[idx].i;
+    const end = idx + 1 < hits.length ? hits[idx + 1].i : t.length;
+
+    const chunk = t.slice(start, end).trim();
+    const title = hits[idx].k;
+
+    const safeTitle = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    let body = chunk.replace(new RegExp(`^${safeTitle}\\b\\s*`), "").trim();
+    body = body.replace(/^–\s*/, "").trim();
+
+    if (body.length < 20) continue;
+    blocks.push({ title, body });
+  }
+
+  return blocks.length ? blocks : null;
+}
+
+function renderHighlightsSection(o) {
+  const { short, long } = splitHighlightsSmart(o.highlights);
 
   const shortHtml = short.length
-    ? `<ul class="list">${short.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
+    ? `<ul class="list">${short.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
     : "";
 
   if (!long.length) return shortHtml;
+
+  let detailsInner = "";
+  if (long.length === 1) {
+    const blocks = parseFeatureBlocks(long[0]);
+    if (blocks) {
+      detailsInner = blocks
+        .map(
+          (b) => `
+          <div class="feature">
+            <div class="feature__title">${escapeHtml(b.title)}</div>
+            <div class="feature__text">${escapeHtml(b.body)}</div>
+          </div>`
+        )
+        .join("");
+    } else {
+      detailsInner = `<p>${escapeHtml(long[0])}</p>`;
+    }
+  } else {
+    detailsInner = long.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+  }
 
   return `
     ${shortHtml}
     <details class="offer-details">
       <summary>Details anzeigen</summary>
       <div class="offer-details__body">
-        ${long.map(p => `<p>${escapeHtml(p)}</p>`).join("")}
+        ${detailsInner}
       </div>
     </details>
   `;
 }
 
-/* ================= TILE ================= */
+/* ================= Tile ================= */
 
 function renderOfferTile(o) {
   const imgSrc = o.image ? (o.image.startsWith("/") ? o.image : "/" + o.image) : "";
+  const priceNow = formatEUR(o.price);
+  const priceRrp = o.rrp ? formatEUR(o.rrp) : "";
+  const hasRrp = Boolean(o.rrp);
+
+  const metaBits = [];
+  if (o.category) metaBits.push(`<span class="pill">${escapeHtml(o.category)}</span>`);
+  if (o.valid_to) metaBits.push(`<span class="pill">gültig bis ${escapeHtml(o.valid_to)}</span>`);
+  const metaLine = metaBits.length
+    ? `<div class="offer-meta">${metaBits.join("")}</div>`
+    : "";
+
+  const highlightsHtml = renderHighlightsSection(o);
 
   return `
-<article class="tile">
-  ${o.featured ? `<div class="pill">🔥 Top-Angebot</div>` : ""}
+<article class="tile offer-tile">
+  ${o.featured ? `<div class="pill offer-hot">🔥 Top-Angebot</div>` : ""}
 
-  <h3>${escapeHtml(o.title)}</h3>
+  ${metaLine}
+
+  <h3 class="offer-title">${escapeHtml(o.title)}</h3>
 
   ${
     imgSrc
@@ -144,38 +235,52 @@ function renderOfferTile(o) {
       : ""
   }
 
-  <p class="price">${formatEUR(o.price)}</p>
-  ${o.rrp ? `<p class="rrp">UVP <span>${formatEUR(o.rrp)}</span></p>` : ""}
+  <div class="offer-prices">
+    <div class="offer-price">${escapeHtml(priceNow)}</div>
+    ${hasRrp ? `<div class="offer-rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
+  </div>
 
-  ${o.note ? `<p class="note">${escapeHtml(o.note)}</p>` : ""}
+  ${o.note ? `<p class="offer-note">${escapeHtml(o.note)}</p>` : ""}
 
-  ${renderHighlights(o)}
+  ${highlightsHtml}
 
-  <a class="btn btn--ghost" href="${escapeHtml(o.cta_link)}">Anfragen</a>
+  <div class="offer-cta">
+    <a class="btn btn--ghost" href="${escapeHtml(o.cta_link || "https://unger-warburg.de/#kontakt")}">Anfragen</a>
+  </div>
 </article>`;
 }
 
-/* ================= PAGE ================= */
+/* ================= Page ================= */
 
 function renderPage(offers) {
-  const tpl = fs.readFileSync(path.join(process.cwd(), "templates", "offers-page.html"), "utf8");
+  const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template fehlt: ${path.relative(process.cwd(), templatePath)}`);
+  }
+
+  const tpl = fs.readFileSync(templatePath, "utf8");
 
   const content = offers.length
-    ? `<div class="grid">${offers.map(renderOfferTile).join("")}</div>`
-    : `<p>Aktuell keine Angebote.</p>`;
+    ? `<div class="grid offers-grid">${offers.map(renderOfferTile).join("\n")}</div>`
+    : `<div class="tile"><h3 style="margin:0 0 8px">Aktuell sind keine Angebote online.</h3><p style="margin:0;color:var(--muted)">Schau später nochmal vorbei oder ruf uns an.</p></div>`;
 
   return tpl
     .replaceAll("{{TITLE}}", "Angebote | Unger Haushalts- & Medientechnik")
-    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – automatisch aus dem CMS.")
+    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
     .replaceAll("{{CONTENT}}", content);
 }
 
-/* ================= BUILD ================= */
+function main() {
+  const offers = readOffers();
+  const html = renderPage(offers);
 
-const offers = readOffers();
-const html = renderPage(offers);
+  // Subdomain: / zeigt direkt Angebote
+  fs.writeFileSync(outIndex, html, "utf8");
+  fs.writeFileSync(outOffers, html, "utf8");
 
-fs.writeFileSync(outIndex, html);
-fs.writeFileSync(outOffers, html);
+  console.log(`✅ Angebote gebaut: ${offers.length}`);
+  console.log(`   → index.html, angebote.html`);
+}
 
-console.log(`✔ Angebote gebaut (${offers.length})`);
+main();
+
