@@ -7,7 +7,15 @@
   <meta name="description" content="{{DESCRIPTION}}">
   <link rel="stylesheet" href="styles.css">
 
+  <!-- Nur Ergänzungen für Angebote (Details + Bilder) -->
   <style>
+    /* Karten-Feinschliff ohne euer Design zu überschreiben */
+    .offers-grid { gap: 16px; }
+
+    .offer-hot { margin-bottom: 10px; display: inline-block; }
+    .offer-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .offer-title { margin: 0 0 10px; }
+
     .offer-img{
       width:100%;
       height:260px;
@@ -15,44 +23,123 @@
       border-radius:14px;
       border:1px solid var(--line);
       background:#fff;
-      margin-bottom:12px;
+      margin:0 0 12px;
+      display:block;
     }
     .offer-img.is-portrait{
       height:340px;
       object-fit:contain;
     }
-    .price{ font-weight:1000; font-size:20px; margin:6px 0 }
-    .rrp{ color:var(--muted) }
-    .rrp span{ text-decoration:line-through }
-    .offer-details summary{ cursor:pointer; font-weight:900 }
-    .offer-details__body{ margin-top:10px; color:var(--muted) }
+    .offer-img.is-landscape{
+      height:260px;
+      object-fit:cover;
+    }
+
+    .offer-prices{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .offer-price{ font-weight: 1000; font-size: 20px; margin: 6px 0; }
+    .offer-rrp{ color: var(--muted); font-weight: 800; }
+    .offer-rrp span{ text-decoration: line-through; margin-left: 6px; }
+
+    .offer-note{ margin:10px 0 0; color: var(--muted); }
+
+    .offer-cta{ margin-top: 14px; }
+
+    .offer-details{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .offer-details summary{
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .offer-details__body{
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .offer-details__body p{ margin: 10px 0 0; }
+
+    .feature{ padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .feature:last-child{ border-bottom: none; }
+    .feature__title{ font-weight: 1000; color: var(--ink); margin-bottom: 6px; }
+    .feature__text{ color: var(--muted); }
   </style>
 </head>
 
 <body>
 
-<section class="section">
-  <div class="container">
-    <h1>Angebote</h1>
-    {{CONTENT}}
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <div class="topbar__left">
+        <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+        <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
+      </div>
+      <div class="topbar__right">
+        <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
+        <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+      </div>
+    </div>
   </div>
-</section>
 
-<script>
-(function(){
-  function tag(img){
-    if(!img.naturalWidth) return;
-    if(img.naturalHeight > img.naturalWidth * 1.15){
-      img.classList.add("is-portrait");
-    }
-  }
-  document.querySelectorAll("img.offer-img").forEach(img=>{
-    img.complete ? tag(img) : img.addEventListener("load",()=>tag(img));
-  });
-})();
-</script>
+  <!-- HEADER / NAV -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="https://unger-warburg.de/">
+        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
+      </a>
 
-<script src="script.js"></script>
+      <nav class="nav" aria-label="Hauptnavigation">
+        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+          <span class="nav__toggleLines" aria-hidden="true"></span>
+          <span class="sr-only">Menü</span>
+        </button>
+
+        <ul class="nav__menu" id="navMenu">
+          <li><a href="https://unger-warburg.de/">Start</a></li>
+          <li><a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+          <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
+          <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
+          <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
+          <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
+          <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <section class="section">
+    <div class="container">
+      <h1 style="margin-top:0">Angebote</h1>
+      <p class="lead" style="margin-top:0">Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.</p>
+
+      {{CONTENT}}
+    </div>
+  </section>
+
+  <!-- Auto Hoch-/Querformat-Erkennung -->
+  <script>
+    (function () {
+      function tag(img) {
+        if (!img || !img.naturalWidth || !img.naturalHeight) return;
+        var isPortrait = img.naturalHeight > img.naturalWidth * 1.15;
+        if (isPortrait) img.classList.add("is-portrait");
+        else img.classList.add("is-landscape");
+      }
+      function init() {
+        document.querySelectorAll("img.offer-img").forEach(function (img) {
+          if (img.complete) tag(img);
+          else img.addEventListener("load", function () { tag(img); }, { once: true });
+        });
+      }
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+      else init();
+    })();
+  </script>
+
+  <script src="script.js"></script>
 </body>
 </html>
 
