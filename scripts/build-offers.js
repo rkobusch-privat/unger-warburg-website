@@ -120,7 +120,6 @@ function escapeRegExp(s) {
 function parseFeatureBlocks(longText) {
   const t = normalizeSpaces(longText);
 
-  // Keywords kannst du jederzeit erweitern (gilt dann für alle Angebote)
   const keywords = [
     "BluPerformance",
     "NoFrost",
@@ -141,13 +140,55 @@ function parseFeatureBlocks(longText) {
     "AutoDose",
   ];
 
-  // Positionen finden
+  // Nur echte Überschrift-Starts erkennen:
+  // Start oder direkt nach Satzende (. ! ?) + Keyword + optional "–" / "-" / ":" danach
   const hits = [];
   for (const k of keywords) {
-    const re = new RegExp(`\\b${escapeRegExp(k)}\\b`, "g");
+    const kEsc = escapeRegExp(k);
+    const re = new RegExp(`(^|[.!?]\\s+)(${kEsc})(\\s*(?:–|-|:)\\s+|\\s+)`, "g");
     let m;
-    while ((m = re.exec(t)) !== null) hits.push({ k, i: m.index });
+    while ((m = re.exec(t)) !== null) {
+      const idx = m.index + m[1].length; // Startposition vom Keyword
+      hits.push({ k, i: idx });
+    }
   }
+
+  hits.sort((a, b) => a.i - b.i);
+
+  if (hits.length < 2) return null;
+
+  const blocks = [];
+  for (let idx = 0; idx < hits.length; idx++) {
+    const start = hits[idx].i;
+    const end = idx + 1 < hits.length ? hits[idx + 1].i : t.length;
+
+    const title = hits[idx].k;
+    let chunk = t.slice(start, end).trim();
+
+    // Titel am Anfang entfernen
+    chunk = chunk.replace(new RegExp(`^${escapeRegExp(title)}\\b\\s*`), "").trim();
+    // führende Trennzeichen entfernen
+    chunk = chunk.replace(/^(?:–|-|:)\s*/, "").trim();
+
+    if (chunk.length < 20) continue;
+
+    blocks.push({ title, body: chunk });
+  }
+
+  // Falls derselbe Titel direkt hintereinander kommt: zusammenführen statt doppeln
+  const cleaned = [];
+  for (const b of blocks) {
+    if (!cleaned.length) cleaned.push(b);
+    else {
+      const prev = cleaned[cleaned.length - 1];
+      if (prev.title === b.title) prev.body = (prev.body + " " + b.body).trim();
+      else cleaned.push(b);
+    }
+  }
+
+  return cleaned.length ? cleaned : null;
+}
+
   hits.sort((a, b) => a.i - b.i);
 
   // Wenn wir weniger als 2 Treffer haben, lohnt Split nicht
