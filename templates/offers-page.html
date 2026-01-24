@@ -1,24 +1,24 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="index,follow" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>{{TITLE}}</title>
-  <meta name="description" content="{{DESCRIPTION}}" />
+  <meta name="description" content="{{DESCRIPTION}}">
 
-  <!-- Wichtig: gleiche CSS-Datei wie die Hauptseite -->
-  <link rel="stylesheet" href="styles.css" />
+  <!-- WICHTIG: exakt dieselbe CSS-Datei wie auf eurer Hauptseite -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <!-- Topbar (wie auf der Hauptseite) -->
+
+  <!-- ================= TOPBAR ================= -->
   <div class="topbar">
     <div class="container topbar__inner">
       <div class="topbar__left">
         <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
-        <a class="toplink" href="/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
+        <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
       </div>
       <div class="topbar__right">
         <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
@@ -27,17 +27,16 @@
     </div>
   </div>
 
-  <!-- Header/Nav (wie auf der Hauptseite) -->
-  <header class="header" id="start">
+  <!-- ================= HEADER / NAV ================= -->
+  <header class="header">
     <div class="container header__inner">
-      <a class="brand" href="https://unger-warburg.de/" aria-label="Startseite">
-        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
+      <a class="brand" href="https://unger-warburg.de/">
+        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
       </a>
 
-      <nav class="nav" aria-label="Hauptnavigation">
-        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
-          <span class="nav__toggleLines" aria-hidden="true"></span>
-          <span class="sr-only">Menü</span>
+      <nav class="nav">
+        <button class="nav__toggle" id="navToggle">
+          <span class="nav__toggleLines"></span>
         </button>
 
         <ul class="nav__menu" id="navMenu">
@@ -46,55 +45,71 @@
           <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
           <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
           <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
-          <li><a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a></li>
           <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
-          <li><a href="https://unger-warburg.de/#ueber-uns">Über uns</a></li>
           <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Hero im selben Stil (nur Text angepasst) -->
-  <section class="hero hero--image" aria-label="Angebote">
-    <div class="hero__bg" aria-hidden="true"></div>
+  <!-- ================= HERO ================= -->
+  <section class="hero hero--image">
+    <div class="hero__bg"></div>
     <div class="container hero__inner">
       <div class="hero__copy">
         <div class="hero__kicker">
           <span class="chip chip--red">Angebote</span>
-          <span class="chip">TV</span>
-          <span class="chip">Audio</span>
-          <span class="chip">Haushalt</span>
-          <span class="chip">Handy</span>
-          <span class="chip">Computer</span>
         </div>
 
         <h1>
           Aktuelle Angebote
-          <span class="h1-sub">Im CMS gepflegt – hier automatisch angezeigt.</span>
+          <span class="h1-sub">Direkt aus unserem System – ohne doppelte Pflege</span>
         </h1>
 
         <p class="lead">
-          Preise, Highlights und Bilder kommen direkt aus dem CMS – ohne doppelte Pflege.
+          Alle Preise, Bilder und Highlights werden zentral gepflegt und hier automatisch angezeigt.
         </p>
 
         <div class="hero__cta">
           <a class="btn" href="https://unger-warburg.de/#kontakt">Jetzt anfragen</a>
-          <a class="btn btn--ghost" href="#liste">Zur Übersicht</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Inhalt -->
-  <section class="section" id="liste">
+  <!-- ================= CONTENT ================= -->
+  <section class="section">
     <div class="container">
+
+      <!-- HIER FÜGT DAS BUILD-SCRIPT DIE ANGEBOTE EIN -->
       {{CONTENT}}
+
     </div>
   </section>
 
-  <!-- Footer: wenn du einen Footer in index.html hast, kopiere ihn 1:1 hier rein -->
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik">
+      </div>
+
+      <div class="footer__links">
+        <a href="https://unger-warburg.de/">Start</a>
+        <a href="https://unger-warburg.de/impressum.html">Impressum</a>
+        <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
+      </div>
+
+      <div class="footer__fine">
+        © <span id="year"></span> Unger Haushalts- & Medientechnik · Marktstr. 6 · 34414 Warburg
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
   <script src="script.js"></script>
 </body>
 </html>
-
