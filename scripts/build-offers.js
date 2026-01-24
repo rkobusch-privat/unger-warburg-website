@@ -78,63 +78,46 @@ function readOffers() {
 }
 
 function renderOfferCard(o) {
-  const imgSrc = o.image
-    ? (o.image.startsWith("/") ? o.image : "/" + o.image)
-    : "";
-
-  const img = imgSrc
-    ? `<img class="card__img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(o.title)}" loading="lazy">`
-    : `<div class="card__img card__img--placeholder" aria-hidden="true"></div>`;
-
+  const imgSrc = o.image ? (o.image.startsWith("/") ? o.image : "/" + o.image) : "";
   const priceNow = formatEUR(o.price);
   const priceRrp = o.rrp ? formatEUR(o.rrp) : "";
   const hasRrp = Boolean(o.rrp);
 
   const highlights = (o.highlights?.length)
-    ? `<ul class="hl">${o.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
+    ? `<ul class="list">${o.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
     : ``;
 
-  const metaLeft = o.category ? `<span class="meta__pill">${escapeHtml(o.category)}</span>` : ``;
-  const metaRight = o.valid_to ? `<span class="meta__hint">gültig bis ${escapeHtml(o.valid_to)}</span>` : ``;
-
-  const badge = o.featured ? `<div class="badge" aria-label="Top-Angebot">Top</div>` : ``;
-
-  const note = o.note ? `<p class="note">${escapeHtml(o.note)}</p>` : ``;
-
-  const cta = o.cta_link
-    ? `<a class="btn" href="${escapeHtml(o.cta_link)}">Beratung / Anfragen</a>`
-    : ``;
+  const tags = `
+    <div class="offer__meta">
+      ${o.category ? `<span class="tag">${escapeHtml(o.category)}</span>` : ``}
+      ${o.valid_to ? `<span class="tag">gültig bis ${escapeHtml(o.valid_to)}</span>` : ``}
+      ${o.featured ? `<span class="tag tag--hot">Top-Angebot</span>` : ``}
+    </div>
+  `;
 
   return `
-    <article class="card">
-      <div class="media">
-        ${badge}
-        ${img}
-      </div>
+    <article class="offer">
+      ${imgSrc ? `<img class="offer__img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(o.title)}" loading="lazy">` : ``}
 
-      <div class="card__body">
-        <div class="meta">
-          <div class="meta__left">${metaLeft}</div>
-          <div class="meta__right">${metaRight}</div>
-        </div>
+      <div>
+        ${tags}
+        <h3 class="offer__title">${escapeHtml(o.title)}</h3>
 
-        <h2 class="card__title">${escapeHtml(o.title)}</h2>
-
-        <div class="price">
-          <div class="price__now">${escapeHtml(priceNow)}</div>
-          ${hasRrp ? `<div class="price__rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
-        </div>
+        <div class="offer__price">${escapeHtml(priceNow)}</div>
+        ${hasRrp ? `<div class="offer__rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
 
         ${highlights}
-        ${note}
 
-        <div class="cta">
-          ${cta}
-        </div>
+        ${o.note ? `<p class="offer__note">${escapeHtml(o.note)}</p>` : ``}
+
+        <p style="margin-top:12px">
+          <a class="btn btn--ghost" href="${escapeHtml(o.cta_link || "/#kontakt")}">Beratung / Anfragen</a>
+        </p>
       </div>
     </article>
   `;
 }
+
 
 function renderPage(offers) {
   const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
