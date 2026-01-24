@@ -1,0 +1,7 @@
+{
+  "name": "unger-warburg-website",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-offers.js"
+  }
+}
