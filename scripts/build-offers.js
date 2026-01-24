@@ -137,29 +137,23 @@ function renderOfferCard(o) {
 }
 
 function renderPage(offers) {
-  const cards = offers.map(renderOfferCard).join("\n");
+  const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
+  const tpl = fs.readFileSync(templatePath, "utf8");
 
-  return `<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Angebote – Unger Warburg</title>
-  <meta name="description" content="Aktuelle Angebote – gepflegt im CMS und automatisch hier angezeigt." />
-  <style>
-  :root{
-    --max: 1120px;
-    --gap: 18px;
-    --radius: 16px;
-    --border: #e7e7ea;
-    --text: #111216;
-    --muted: #5e6472;
-    --bg: #ffffff;
-    --bg-soft: #f6f7f9;
-    --shadow: 0 10px 28px rgba(0,0,0,.06);
-    --shadow2: 0 10px 26px rgba(0,0,0,.10);
-    --accent: #0a66ff;
-  }
+  const cards = offers.map(renderOfferCard).join("\n");
+  const content = offers.length
+    ? `<section class="offers-grid">${cards}</section>`
+    : `<div class="notice">Aktuell sind keine Angebote online.</div>`;
+
+  return tpl
+    .replaceAll("{{TITLE}}", "Angebote – Unger Haushalts- & Medientechnik")
+    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
+    .replaceAll("{{CANONICAL}}", "https://angebote.unger-warburg.de/")
+    .replaceAll("{{H1}}", "Angebote")
+    .replaceAll("{{SUBTITLE}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
+    .replaceAll("{{CONTENT}}", content);
+}
+
 
   *{box-sizing:border-box}
   body{
