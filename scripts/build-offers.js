@@ -78,45 +78,59 @@ function readOffers() {
 }
 
 function renderOfferCard(o) {
-  const img = o.image
-    ? `<img class="card__img" src="${escapeHtml(o.image.startsWith("/") ? o.image : "/" + o.image)}" alt="${escapeHtml(o.title)}" loading="lazy">`
+  const imgSrc = o.image
+    ? (o.image.startsWith("/") ? o.image : "/" + o.image)
+    : "";
+
+  const img = imgSrc
+    ? `<img class="card__img" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(o.title)}" loading="lazy">`
     : `<div class="card__img card__img--placeholder" aria-hidden="true"></div>`;
 
-  const priceLine = `
-    <div class="price">
-      <span class="price__now">${escapeHtml(formatEUR(o.price))}</span>
-      ${o.rrp ? `<span class="price__rrp">UVP: ${escapeHtml(formatEUR(o.rrp))}</span>` : ``}
-    </div>
-  `;
+  const priceNow = formatEUR(o.price);
+  const priceRrp = o.rrp ? formatEUR(o.rrp) : "";
+  const hasRrp = Boolean(o.rrp);
 
-  const highlights = o.highlights?.length
+  const highlights = (o.highlights?.length)
     ? `<ul class="hl">${o.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`
     : ``;
 
-  const meta = `
-    <div class="meta">
-      ${o.category ? `<span class="pill">${escapeHtml(o.category)}</span>` : ``}
-      ${o.valid_to ? `<span class="muted">gültig bis ${escapeHtml(o.valid_to)}</span>` : ``}
-      ${o.featured ? `<span class="pill pill--hot">Top</span>` : ``}
-    </div>
-  `;
+  const metaLeft = o.category ? `<span class="meta__pill">${escapeHtml(o.category)}</span>` : ``;
+  const metaRight = o.valid_to ? `<span class="meta__hint">gültig bis ${escapeHtml(o.valid_to)}</span>` : ``;
+
+  const badge = o.featured ? `<div class="badge" aria-label="Top-Angebot">Top</div>` : ``;
 
   const note = o.note ? `<p class="note">${escapeHtml(o.note)}</p>` : ``;
 
   const cta = o.cta_link
-    ? `<a class="btn" href="${escapeHtml(o.cta_link)}">Anfragen</a>`
+    ? `<a class="btn" href="${escapeHtml(o.cta_link)}">Beratung / Anfragen</a>`
     : ``;
 
   return `
     <article class="card">
-      ${img}
+      <div class="media">
+        ${badge}
+        ${img}
+      </div>
+
       <div class="card__body">
-        ${meta}
+        <div class="meta">
+          <div class="meta__left">${metaLeft}</div>
+          <div class="meta__right">${metaRight}</div>
+        </div>
+
         <h2 class="card__title">${escapeHtml(o.title)}</h2>
-        ${priceLine}
+
+        <div class="price">
+          <div class="price__now">${escapeHtml(priceNow)}</div>
+          ${hasRrp ? `<div class="price__rrp">UVP <span>${escapeHtml(priceRrp)}</span></div>` : ``}
+        </div>
+
         ${highlights}
         ${note}
-        <div class="cta">${cta}</div>
+
+        <div class="cta">
+          ${cta}
+        </div>
       </div>
     </article>
   `;
