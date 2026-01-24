@@ -1,408 +1,228 @@
-import fs from "fs";
-import path from "path";
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
 
-const ROOT = process.cwd();
-const OFFERS_DIR = path.join(ROOT, "content", "offers");
-const OUT_INDEX = path.join(ROOT, "index.html");
-const OUT_ANGEBOTE = path.join(ROOT, "angebote.html");
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
 
-/* ================= Helpers ================= */
+  <link rel="canonical" href="https://angebote.unger-warburg.de/angebote.html" />
 
-function escapeHtml(str = "") {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
+  <meta property="og:title" content="{{TITLE}}" />
+  <meta property="og:description" content="{{DESCRIPTION}}" />
+  <meta property="og:url" content="https://angebote.unger-warburg.de/angebote.html" />
+  <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
-function formatEUR(value) {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return "";
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(num);
-}
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{TITLE}}" />
+  <meta name="twitter:description" content="{{DESCRIPTION}}" />
+  <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
 
-function formatPrice(value) {
-  // Unterstützt: Number (alt) oder String (neu, z.B. "2.499 €")
-  if (value === null || value === undefined) return "";
-  if (typeof value === "number") return formatEUR(value);
-  if (typeof value === "string") return value.trim();
-  return "";
-}
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
 
-function parseDateISO(dateStr) {
-  if (!dateStr) return null;
-  const d = new Date(`${dateStr}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
+  <!-- Angebots-spezifische Ergänzungen -->
+  <style>
+    /* Grid-Lücke */
+    .offers-grid { gap: 16px; }
 
-function toArray(value) {
-  if (!value) return [];
-  return Array.isArray(value) ? value : [value];
-}
-
-/* ================= Parsing helper for German formatted EUR strings ================= */
-
-function parseEURString(str) {
-  if (!str) return NaN;
-  // Entferne alles außer Ziffern, Punkt, Komma, Minus
-  let cleaned = String(str).replace(/[^\d,.-]/g, "");
-  // Deutsche Schreibweise: Punkt Tausender, Komma Dezimal → erst Tausender weg, dann Komma zu Punkt
-  // Aber wenn z.B. "2.499 €" → "2.499" → remove '.' → "2499"
-  // und falls "2.499,50" → remove '.' → "2499,50" → replace ',' → '.'
-  cleaned = cleaned.replace(/\./g, "");
-  cleaned = cleaned.replace(/,/g, ".");
-  const num = parseFloat(cleaned);
-  return Number.isFinite(num) ? num : NaN;
-}
-
-/* ================= Normalizer (new schema) ================= */
-
-function normalizeBullets(bulletsRaw) {
-  // Erwartet neu: ["Text", ...]
-  // Toleriert: [{ bullet: "Text" }, ...]
-  const arr = toArray(bulletsRaw);
-
-  return arr
-    .map((item) => {
-      if (typeof item === "string") return item.trim();
-      if (item && typeof item === "object") {
-        if (typeof item.bullet === "string") return item.bullet.trim();
-        const firstString = Object.values(item).find((v) => typeof v === "string");
-        return typeof firstString === "string" ? firstString.trim() : "";
-      }
-      return "";
-    })
-    .filter(Boolean);
-}
-
-function normalizeFeatures(featuresRaw) {
-  // Erwartet: [{ title, description }, ...]
-  const arr = toArray(featuresRaw);
-
-  return arr
-    .map((f) => ({
-      title: typeof f?.title === "string" ? f.title.trim() : "",
-      description: typeof f?.description === "string" ? f.description.trim() : "",
-    }))
-    .filter((f) => f.title && f.description);
-}
-
-function normalizeHighlights(highlightsRaw) {
-  // Altbestand:
-  // - Array gemischt: ["Text", {item:"Text"} ...]
-  // - oder String
-  if (!highlightsRaw) return [];
-
-  if (typeof highlightsRaw === "string") {
-    const t = highlightsRaw.trim();
-    return t ? [t] : [];
-  }
-
-  if (Array.isArray(highlightsRaw)) return highlightsRaw;
-
-  return [];
-}
-
-/* ================= Read offers ================= */
-
-function readOffers() {
-  if (!fs.existsSync(OFFERS_DIR)) return [];
-  const files = fs.readdirSync(OFFERS_DIR).filter((f) => f.endsWith(".json"));
-
-  let offers = files
-    .map((file) => {
-      try {
-        const raw = fs.readFileSync(path.join(OFFERS_DIR, file), "utf8");
-        const d = JSON.parse(raw);
-
-        // Abwärtskompatibel: rrp (alt) oder uvp (neu)
-        const uvp = d.uvp ?? d.rrp;
-
-        return {
-          title: d.title || "",
-          slug: d.slug || "",
-          teaser: d.teaser || "",
-
-          category: d.category || "",
-
-          // Preise alt/neu
-          price: d.price,
-          uvp: uvp,
-
-          // Content neu/alt
-          bullets: d.bullets,
-          features: d.features,
-          highlights: normalizeHighlights(d.highlights),
-
-          image: d.image || "",
-
-          valid_to: d.valid_to || "",
-          featured: d.featured === true,
-          note: d.note || "",
-          cta_link: d.cta_link || "https://unger-warburg.de/#kontakt",
-          active: d.active !== false,
-
-          __file: file,
-        };
-      } catch {
-        console.warn(`⚠️ Offer JSON kaputt: ${file}`);
-        return null;
-      }
-    })
-    .filter(Boolean);
-
-  offers = offers.filter((o) => o.active);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  offers = offers.filter((o) => {
-    const d = parseDateISO(o.valid_to);
-    return !d || d >= today;
-  });
-
-  offers.sort((a, b) => {
-    if (a.featured !== b.featured) return a.featured ? -1 : 1;
-    return a.title.localeCompare(b.title, "de");
-  });
-
-  for (const o of offers) validateOffer(o);
-
-  return offers;
-}
-
-function validateOffer(o) {
-  const warnings = [];
-
-  const bullets = normalizeBullets(o.bullets);
-  if (bullets.length > 0 && (bullets.length < 5 || bullets.length > 10)) {
-    warnings.push(`bullets sollten 5–10 sein, sind aber ${bullets.length}`);
-  }
-
-  const features = normalizeFeatures(o.features);
-  if (features.length > 10) warnings.push(`features > 10 (${features.length})`);
-
-  if (!o.title) warnings.push("title fehlt");
-  if (!o.price && o.price !== 0) warnings.push("price fehlt");
-  if (!o.image) warnings.push("image fehlt");
-
-  if (warnings.length) {
-    console.warn(`[OFFER WARN] ${o.__file} → ${warnings.join(", ")}`);
-  }
-}
-
-/* ================= Legacy highlights (robust) ================= */
-
-// Unterstützt: "Text" oder {item:"Text"} oder {something:"Text"}
-function highlightToText(h) {
-  if (typeof h === "string") return h;
-  if (h && typeof h === "object") {
-    if (typeof h.item === "string") return h.item;
-    for (const k of Object.keys(h)) {
-      if (typeof h[k] === "string") return h[k];
+    /* Bild */
+    .offer-img{
+      width:100%;
+      height:260px;
+      object-fit:cover;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      margin:0 0 12px;
+      display:block;
     }
-  }
-  return "";
-}
+    .offer-img.is-portrait{ height:340px; object-fit:contain; }
+    .offer-img.is-landscape{ height:260px; object-fit:cover; }
 
-function splitIntoParagraphs(text) {
-  const t = String(text || "").replace(/\s+/g, " ").trim();
-  if (!t) return [];
-
-  const parts = t.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ])/g);
-  if (parts.length <= 1) return [t];
-
-  const merged = [];
-  for (const p of parts) {
-    const s = p.trim();
-    if (!s) continue;
-    if (merged.length && s.length < 40) {
-      merged[merged.length - 1] = (merged[merged.length - 1] + " " + s).trim();
-    } else {
-      merged.push(s);
+    /* Details */
+    .offer-details{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
     }
-  }
-  return merged.length ? merged : [t];
-}
+    .offer-details summary{
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .offer-details__body{
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
 
-function renderHighlightsLegacy(o) {
-  const raw = (o.highlights || [])
-    .map(highlightToText)
-    .map((x) => String(x || "").trim())
-    .filter(Boolean);
+    /* Feature-Blöcke */
+    .feature{ padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .feature:last-child{ border-bottom: none; }
+    .feature__title{ font-weight: 1000; color: var(--ink); margin-bottom: 6px; }
+    .feature__text{ color: var(--muted); }
 
-  const short = [];
-  const long = [];
+    /* Spar-Badge */
+    .offer-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--accent); /* meist auffällig, z. B. Rot */
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      z-index: 2;
+    }
 
-  for (const t of raw) {
-    if (t.length > 120) long.push(t);
-    else short.push(t);
-  }
+    /* Featured stärker hervorheben */
+    .offer-card--featured {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      border: 2px solid var(--accent); /* markant, aber nicht grell */
+      position: relative;
+    }
+  </style>
+</head>
 
-  const shortLimited = short.slice(0, 4);
-  const shortOverflow = short.slice(4);
-  if (shortOverflow.length) long.unshift(...shortOverflow);
+<body>
 
-  const shortHtml = shortLimited.length
-    ? `<ul class="list">${shortLimited.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`
-    : "";
+<a class="skip-link" href="#content">Zum Inhalt springen</a>
 
-  if (!long.length) return shortHtml;
-
-  const longParas = long.flatMap(splitIntoParagraphs);
-
-  return `
-    ${shortHtml}
-    <div class="offer-legacy">
-      ${longParas.map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+      <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
     </div>
-  `;
-}
-
-/* ================= Details rendering ================= */
-
-function renderBulletsList(o, limit = 10) {
-  const bullets = normalizeBullets(o.bullets).slice(0, limit);
-  if (!bullets.length) return "";
-  return `<ul class="list">${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`;
-}
-
-function renderDetails(o) {
-  const bulletsHtml = renderBulletsList(o, 10);
-  const features = normalizeFeatures(o.features);
-  const legacy = normalizeHighlights(o.highlights);
-
-  // Wenn nichts für Details da ist, kein <details>
-  if (!bulletsHtml && features.length === 0 && legacy.length === 0) return "";
-
-  let bodyHtml = "";
-
-  // Bullets als erster Block in Details, falls vorhanden
-  if (bulletsHtml) {
-    bodyHtml += `
-      <div class="offer-details__bullets">
-        ${bulletsHtml}
-      </div>
-    `;
-  }
-
-  // Features haben Vorrang, Legacy Fallback
-  if (features.length > 0) {
-    bodyHtml += `
-      <div class="offer-details__features">
-        ${features
-          .map(
-            (f) => `
-          <div class="offer-feature">
-            <h4 class="offer-feature__title">${escapeHtml(f.title)}</h4>
-            <p class="offer-feature__desc">${escapeHtml(f.description)}</p>
-          </div>
-        `
-          )
-          .join("")}
-      </div>
-    `;
-  } else if (legacy.length > 0) {
-    bodyHtml += `
-      <div class="offer-details__legacy">
-        ${renderHighlightsLegacy({ ...o, highlights: legacy })}
-      </div>
-    `;
-  }
-
-  return `
-    <details class="offer-details">
-      <summary>Details anzeigen</summary>
-      <div class="offer-details__body">
-        ${bodyHtml}
-      </div>
-    </details>
-  `;
-}
-
-/* ================= Tile ================= */
-
-function renderTile(o) {
-  const img = o.image
-    ? `<img src="${escapeHtml(o.image)}" alt="${escapeHtml(o.title)}" class="offer-img" loading="lazy">`
-    : "";
-
-  const meta = [];
-  if (o.category) meta.push(`<span class="pill">${escapeHtml(o.category)}</span>`);
-  if (o.valid_to) meta.push(`<span class="pill">gültig bis ${escapeHtml(o.valid_to)}</span>`);
-
-  const priceText = formatPrice(o.price);
-  const uvpText = formatPrice(o.uvp);
-
-  // Karte: teaser/note wie gehabt
-  const teaserHtml = o.teaser ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.teaser)}</p>` : "";
-  const noteHtml = o.note ? `<p class="note" style="color:var(--muted)">${escapeHtml(o.note)}</p>` : "";
-
-  /* ===== Spar‑Badge berechnen ===== */
-  let badgeHtml = "";
-  // Parse Preis + UVP als Zahlen, falls möglich
-  const priceNum = parseEURString(priceText);
-  const uvpNum = parseEURString(uvpText);
-
-  if (!Number.isNaN(priceNum) && !Number.isNaN(uvpNum) && uvpNum > priceNum) {
-    const perc = Math.round(((uvpNum - priceNum) / uvpNum) * 100);
-    if (perc > 0) {
-      badgeHtml = `<span class="offer-badge">-${perc}%</span>`;
-    }
-  }
-
-  /* ===== Tile container class für Featured ===== */
-  const featuredClass = o.featured ? "offer-card--featured" : "";
-
-  return `
-<article class="tile ${featuredClass}">
-  ${badgeHtml}
-  ${meta.length ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0">${meta.join("")}</div>` : ""}
-
-  <h3>${escapeHtml(o.title)}</h3>
-
-  ${img}
-
-  <div class="price-row" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
-    <strong style="font-size:20px">${escapeHtml(priceText)}</strong>
-    ${
-      uvpText
-        ? `<span class="offer-rrp">UVP <span>${escapeHtml(uvpText)}</span></span>`
-        : ""
-    }
+    <div class="topbar__right">
+      <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
+      <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+    </div>
   </div>
+</div>
 
-  ${teaserHtml}
-  ${noteHtml}
+<header class="header" id="start">
+  <div class="container header__inner">
+    <a class="brand" href="https://unger-warburg.de/">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
+    </a>
 
-  ${renderDetails(o)}
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleLines" aria-hidden="true"></span>
+        <span class="sr-only">Menü</span>
+      </button>
 
-  <a class="btn btn--ghost offer-cta" href="${escapeHtml(o.cta_link)}">Anfragen</a>
-</article>`;
-}
+      <ul class="nav__menu" id="navMenu">
+        <li><a href="https://unger-warburg.de/">Start</a></li>
+        <li><a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
+        <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
+        <li><a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="https://unger-warburg.de/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
-/* ================= Page ================= */
+<main id="content">
 
-function renderPage(offers) {
-  const tpl = fs.readFileSync(path.join(ROOT, "templates", "offers-page.html"), "utf8");
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumbs">
+        <a href="https://unger-warburg.de/">Start</a> › Angebote
+      </p>
 
-  const content = offers.length
-    ? `<div class="grid offers-grid">${offers.map(renderTile).join("")}</div>`
-    : `<p>Aktuell keine Angebote.</p>`;
+      <h1>Angebote</h1>
 
-  return tpl
-    .replaceAll("{{TITLE}}", "Angebote | Unger Haushalts- & Medientechnik")
-    .replaceAll("{{DESCRIPTION}}", "Attraktive Angebote zu Top-Preisen – direkt in Warburg")
-    .replaceAll("{{CONTENT}}", content);
-}
+      <p class="lead">
+        Attraktive Preise auf ausgewählte Geräte – jetzt sparen und persönlich beraten lassen.
+      </p>
 
-/* ================= Build ================= */
+      <div class="hero__cta">
+        <a class="btn" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a>
+        <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Direkt schreiben</a>
+      </div>
+    </div>
+  </section>
 
-const offers = readOffers();
-const html = renderPage(offers);
+  <section class="section">
+    <div class="container">
 
-fs.writeFileSync(OUT_INDEX, html, "utf8");
-fs.writeFileSync(OUT_ANGEBOTE, html, "utf8");
+      {{CONTENT}}
 
-console.log(`✔ Angebote gebaut: ${offers.length}`);
+      <p class="muted small" style="margin-top:18px">
+        Alle Preise inkl. gesetzlicher MwSt. · Angebote solange der Vorrat reicht.
+      </p>
+      <p class="muted small" style="margin-top:6px">
+        UVP = unverbindliche Preisempfehlung des Herstellers.
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer__Inner">
+    <div class="footer__brand">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+    </div>
+
+    <div class="footer__links">
+      <a href="https://unger-warburg.de/">Start</a>
+      <a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a>
+      <a href="https://unger-warburg.de/handy-warburg.html">Handy</a>
+      <a href="https://unger-warburg.de/computer-warburg.html">Computer</a>
+      <a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="https://unger-warburg.de/impressum.html">Impressum</a>
+      <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
+    </div>
+
+    <div class="footer__fine">
+      © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script>
+(function () {
+  function tag(img) {
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+    if (img.naturalHeight > img.naturalWidth * 1.15) img.classList.add("is-portrait");
+    else img.classList.add("is-landscape");
+  }
+  function init() {
+    document.querySelectorAll("img.offer-img").forEach(function (img) {
+      if (img.complete) tag(img);
+      else img.addEventListener("load", function () { tag(img); }, { once: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
