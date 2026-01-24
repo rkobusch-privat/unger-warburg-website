@@ -239,9 +239,15 @@ function renderOfferTile(o) {
   ${
     imgSrc
       ? `<img src="${escapeHtml(imgSrc)}"
-              alt="${escapeHtml(o.title)}"
-              style="width:100%;height:220px;object-fit:cover;border-radius:14px;border:1px solid var(--line);margin:0 0 12px"
-              loading="lazy">`
+     alt="${escapeHtml(o.title)}"
+     style="width:100%;
+            height:320px;
+            object-fit:contain;
+            border-radius:14px;
+            border:1px solid var(--line);
+            margin:0 0 12px;
+            background:#fff"
+     loading="lazy">`
       : ""
   }
 
