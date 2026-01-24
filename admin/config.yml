@@ -5,26 +5,83 @@ backend:
   base_url: https://api.netlify.com
   auth_endpoint: auth
 
+# admin/config.yml (relevanter Ausschnitt)
+
 media_folder: "assets/offers"
 public_folder: "/assets/offers"
 
 collections:
   - name: "offers"
     label: "Angebote"
+    label_singular: "Angebot"
     folder: "content/offers"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: "json"
     format: "json"
+    slug: "{{slug}}"
+    identifier_field: "title"
+    summary: "{{title}} — {{price}}"
+
     fields:
       - { label: "Titel", name: "title", widget: "string" }
-      - { label: "Kategorie", name: "category", widget: "select", options: ["TV", "Audio", "Waschmaschine", "Trockner", "Kühlen/Gefrieren", "Smartphone", "Küche", "Zubehör", "Sonstiges"] }
-      - { label: "Preis (EUR)", name: "price", widget: "number", value_type: "float", min: 0 }
-      - { label: "UVP (optional)", name: "rrp", widget: "number", required: false, value_type: "float", min: 0 }
-      - { label: "Kurzbeschreibung", name: "highlights", widget: "list", field: { label: "Punkt", name: "item", widget: "string" } }
-      - { label: "Bild", name: "image", widget: "image", required: false }
-      - { label: "Gültig bis", name: "valid_to", widget: "datetime", format: "YYYY-MM-DD", time_format: false, required: false }
-      - { label: "Top-Angebot", name: "featured", widget: "boolean", default: false, required: false }
-      - { label: "Hinweistext", name: "note", widget: "string", required: false }
-      - { label: "CTA-Link", name: "cta_link", widget: "string", required: false, default: "/kontakt.html" }
-      - { label: "Aktiv", name: "active", widget: "boolean", default: true }
+
+      - label: "Slug"
+        name: "slug"
+        widget: "string"
+        hint: "URL/Dateiname, z. B. lg-oled-evo-65g4 (nur a-z, 0-9, -)"
+        pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "Bitte nur Kleinbuchstaben, Zahlen und Bindestriche verwenden."]
+
+      - label: "Preis"
+        name: "price"
+        widget: "string"
+        hint: "z. B. 2.499 €"
+
+      - label: "UVP"
+        name: "uvp"
+        widget: "string"
+        required: false
+        hint: "optional, z. B. 3.499 €"
+
+      - label: "Bild"
+        name: "image"
+        widget: "image"
+        hint: "Wird unter /assets/offers abgelegt"
+        choose_url: false
+
+      - label: "Teaser"
+        name: "teaser"
+        widget: "string"
+        required: false
+        hint: "Optionaler 1-Satz-Teaser (max. 120 Zeichen)"
+        pattern: ["^.{0,120}$", "Maximal 120 Zeichen."]
+
+      - label: "Bulletpoints (Karte)"
+        name: "bullets"
+        widget: "list"
+        min: 5
+        max: 10
+        hint: "5–10 kurze Stichpunkte (eine Zeile, keine Sätze mit Punkt)"
+        field:
+          { label: "Bullet", name: "bullet", widget: "string" }
+
+      - label: "Features (Details)"
+        name: "features"
+        widget: "list"
+        min: 0
+        max: 10
+        required: false
+        collapsed: true
+        summary: "{{fields.title}}"
+        hint: "Neuer Standard: echte Feature-Blöcke (Titel + Kurzbeschreibung). Wenn vorhanden, werden highlights ignoriert."
+        fields:
+          - { label: "Überschrift", name: "title", widget: "string" }
+          - label: "Kurzbeschreibung"
+            name: "description"
+            widget: "text"
+            hint: "1–2 Sätze, kein Bullet-Style"
+
+      - label: "Highlights (Legacy/Fallback)"
+        name: "highlights"
+        widget: "text"
+        required: false
+        hint: "Nur für Altbestand. Wird nur genutzt, wenn features leer/nicht vorhanden sind."
