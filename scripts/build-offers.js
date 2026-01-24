@@ -123,18 +123,14 @@ function renderPage(offers) {
   const templatePath = path.join(process.cwd(), "templates", "offers-page.html");
   const tpl = fs.readFileSync(templatePath, "utf8");
 
-  const cards = offers.map(renderOfferCard).join("\n");
-  const content = offers.length
-    ? `<section class="offers-grid">${cards}</section>`
-    : `<div class="notice">Aktuell sind keine Angebote online.</div>`;
+  const items = offers.length
+    ? `<div class="grid">${offers.map(renderOfferTile).join("\n")}</div>`
+    : `<div class="tile"><h3>Aktuell sind keine Angebote online.</h3><p>Schau später nochmal vorbei oder ruf uns an.</p></div>`;
 
   return tpl
-    .replaceAll("{{TITLE}}", "Angebote – Unger Haushalts- & Medientechnik")
-    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
-    .replaceAll("{{CANONICAL}}", "https://angebote.unger-warburg.de/")
-    .replaceAll("{{H1}}", "Angebote")
-    .replaceAll("{{SUBTITLE}}", "Aktuelle Angebote – im CMS gepflegt, automatisch aktualisiert.")
-    .replaceAll("{{CONTENT}}", content);
+    .replaceAll("{{TITLE}}", "Angebote | Unger Haushalts- & Medientechnik")
+    .replaceAll("{{DESCRIPTION}}", "Aktuelle Angebote – gepflegt im CMS, automatisch aktualisiert.")
+    .replaceAll("{{CONTENT}}", items);
 }
 
 
