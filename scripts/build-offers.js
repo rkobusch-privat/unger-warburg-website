@@ -56,6 +56,24 @@ function formatDateDE(iso) {
   return `${dd}.${mm}.${yyyy}`; // ✅ TT.MM.JJJJ
 }
 
+function slugify(str = "") {
+  return String(str)
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "") // Accents raus
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function toAbsUrl(url) {
+  const u = String(url || "").trim();
+  if (!u) return "";
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  // Bilder liegen bei euch als /assets/... auf der Angebote-Subdomain
+  return `https://angebote.unger-warburg.de${u.startsWith("/") ? "" : "/"}${u}`;
+}
+
 /* ================= Normalizer ================= */
 
 function normalizeBullets(raw) {
@@ -70,8 +88,7 @@ function normalizeFeatures(raw) {
   return raw
     .map((f) => ({
       title: typeof f?.title === "string" ? f.title.trim() : "",
-      description:
-        typeof f?.description === "string" ? f.description.trim() : "",
+      description: typeof f?.description === "string" ? f.description.trim() : "",
     }))
     .filter((f) => f.title && f.description);
 }
@@ -143,6 +160,53 @@ function readOffers() {
   return offers;
 }
 
+/* ================= Schema.org (SEO) ================= */
+
+function buildOffersSchema(offers) {
+  const pageUrl = "https://angebote.unger-warburg.de/angebote.html";
+
+  const itemListElement = offers.map((o, i) => {
+    const anchor = slugify(o.title) || `offer-${i + 1}`;
+    const priceNum = parseEURString(formatPrice(o.price));
+    const imgAbs = toAbsUrl(o.image);
+
+    const offerObj = {
+      "@type": "Offer",
+      priceCurrency: "EUR",
+      url: `${pageUrl}#${anchor}`,
+    };
+
+    // Preis nur, wenn sauber parsebar
+    if (!Number.isNaN(priceNum)) offerObj.price = priceNum;
+
+    // Gültig bis (ISO) – genau das ist das SEO-Feld
+    if (o.valid_to) offerObj.priceValidUntil = o.valid_to;
+
+    return {
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${pageUrl}#${anchor}`,
+      item: {
+        "@type": "Product",
+        name: o.title,
+        ...(imgAbs ? { image: [imgAbs] } : {}),
+        offers: offerObj,
+      },
+    };
+  });
+
+  const graph = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Aktuelle Angebote von Unger Haushalts- & Medientechnik",
+    url: "https://angebote.unger-warburg.de/angebote.html",
+    numberOfItems: itemListElement.length,
+    itemListElement,
+  };
+
+  return `<script type="application/ld+json">\n${JSON.stringify(graph, null, 2)}\n</script>`;
+}
+
 /* ================= Render Details ================= */
 
 function renderDetails(o) {
@@ -184,6 +248,7 @@ function renderDetails(o) {
 function renderTile(o) {
   const priceText = formatPrice(o.price);
   const uvpText = formatPrice(o.uvp);
+  const anchor = slugify(o.title);
 
   let badge = "";
   const p = parseEURString(priceText);
@@ -197,7 +262,7 @@ function renderTile(o) {
   const cls = o.featured ? "tile offer-card--featured" : "tile";
 
   return `
-<article class="${cls}">
+<article id="${escapeHtml(anchor)}" class="${cls}">
   ${badge}
 
   <h3>${escapeHtml(o.title)}</h3>
@@ -214,9 +279,7 @@ function renderTile(o) {
     <strong>${escapeHtml(priceText)}</strong>
     ${
       uvpText
-        ? `<span class="offer-rrp">UVP <span>${escapeHtml(
-            uvpText
-          )}</span></span>`
+        ? `<span class="offer-rrp">UVP <span>${escapeHtml(uvpText)}</span></span>`
         : ""
     }
   </div>
@@ -240,18 +303,20 @@ function renderTile(o) {
 /* ================= Page ================= */
 
 function renderPage(offers) {
-  const tpl = fs.readFileSync(
-    path.join(ROOT, "templates", "offers-page.html"),
-    "utf8"
-  );
+  const tpl = fs.readFileSync(path.join(ROOT, "templates", "offers-page.html"), "utf8");
 
   const content = offers.length
-    ? `<div class="grid offers-grid">${offers
-        .map(renderTile)
-        .join("")}</div>`
+    ? `<div class="grid offers-grid">${offers.map(renderTile).join("")}</div>`
     : `<p>Aktuell keine Angebote.</p>`;
 
-  return tpl.replace("{{CONTENT}}", content);
+  const schema = buildOffersSchema(offers);
+
+  // Schema robust in den Head injizieren, ohne am Template bauen zu müssen
+  const withSchema = tpl.includes("</head>")
+    ? tpl.replace("</head>", `${schema}\n</head>`)
+    : `${schema}\n${tpl}`;
+
+  return withSchema.replace("{{CONTENT}}", content);
 }
 
 /* ================= Build ================= */
@@ -263,4 +328,3 @@ fs.writeFileSync(OUT_INDEX, html, "utf8");
 fs.writeFileSync(OUT_ANGEBOTE, html, "utf8");
 
 console.log(`✔ Angebote gebaut: ${offers.length}`);
-
