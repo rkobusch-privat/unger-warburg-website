@@ -93,11 +93,13 @@ collections:
         required: false
         hint: "z. B. Kühlen/Gefrieren, Waschen, TV"
 
-      - label: "Gültig bis"
-        name: "valid_to"
-        widget: "date"
-        required: false
-        format: "YYYY-MM-DD"
+     - label: "Gültig bis"
+  name: "valid_to"
+  widget: "datetime"
+  required: false
+  time_format: false
+  format: "YYYY-MM-DD"        # so wird es im JSON gespeichert
+  date_format: "DD-MM-YYYY"   # so sieht es der Editor im CMS
 
       - label: "Top-Angebot"
         name: "featured"
