@@ -1,0 +1,44 @@
+{
+  "active": true,
+  "cta_link": "https://unger-warburg.de/#kontakt",
+  "price": "1.899,- Euro",
+  "featured": false,
+  "uvp": "2.599,- Euro",
+  "teaser": "Signature Line Kaffeevollautomat Aluminium Dark Inox ",
+  "bullets": [
+    "Product Recognising Grinder (P.R.G.) mit blitzschneller, automatischer Mahlgradverstellung für jede Kaffeespezialität",
+    "Cold-Brew-Kaffeespezialitäten auf Knopfdruck dank innovativem Cold Extraction Process",
+    "Brüheinheit Generation 8 mit 3D-Brühtechnologie für ultimative Aromaentfaltung",
+    "Hochwertiges Rundumdesign mit konvex-konkav geformter Front, Wassertank in Wellendesign und durchdachten Details",
+    "Wi-Fi Connect"
+  ],
+  "title": " Jura Z10 Aluminium Dark Inox ",
+  "image": "/assets/offers/jura-z10-aluminium-dark-inox.jpg",
+  "features": [
+    {
+      "title": "Druck (bar) ",
+      "description": "15\n"
+    },
+    {
+      "title": "Drucksystem",
+      "description": "Pumpdrucksystem"
+    },
+    {
+      "title": "Heizsystem ",
+      "description": "Thermoblock-Heizsystem "
+    },
+    {
+      "title": "Leistungsaufnahme (W) ",
+      "description": "1.450,00"
+    },
+    {
+      "title": "Reinigung",
+      "description": "Autom. Reinigungs- u. Entkalkungsprogramm"
+    },
+    {
+      "title": "Breite / Höhe / Tiefe / Gewicht",
+      "description": "32 cm / 38 cm / 45 cm / 12,30 kg"
+    }
+  ],
+  "category": "Kaffeevollautomat"
+}
