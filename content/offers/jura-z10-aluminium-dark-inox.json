@@ -41,5 +41,6 @@
       "description": "32 cm / 38 cm / 45 cm / 12,30 kg"
     }
   ],
-  "category": "Kaffeevollautomat"
+  "category": "Kaffeevollautomat",
+  "valid_to": "2026-02-07"
 }
