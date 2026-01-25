@@ -86,18 +86,21 @@
     .feature__text{ color: var(--muted); }
 
     /* Spar-Badge */
-    .offer-badge {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 900;
-      font-size: 13px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      z-index: 2;
-    }
+  /* Badge nicht mehr absolut -> steht oberhalb vom Titel */
+  .offer-badges { display:flex; gap:8px; flex-wrap:wrap; margin: 8px 0 10px; }
+  .offer-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background: var(--accent);
+    color:#fff;
+    font-weight:900;
+    font-size:13px;
+    padding:4px 10px;
+    border-radius:999px; /* pill */
+    line-height:1;
+  }
+</style>
 
     /* Featured-Angebote */
     .offer-card--featured {
