@@ -47,6 +47,15 @@ function parseDateISO(dateStr) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+function formatDateDE(iso) {
+  // Erwartet "YYYY-MM-DD"
+  if (!iso || typeof iso !== "string") return "";
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return iso;
+  const [, yyyy, mm, dd] = m;
+  return `${dd}-${mm}-${yyyy}`; // ✅ TT-MM-JJJJ
+}
+
 /* ================= Normalizer ================= */
 
 function normalizeBullets(raw) {
