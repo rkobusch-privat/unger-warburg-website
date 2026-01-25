@@ -53,7 +53,7 @@ function formatDateDE(iso) {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
   const [, yyyy, mm, dd] = m;
-  return `${dd}-${mm}-${yyyy}`; // ✅ TT-MM-JJJJ
+  return `${dd}.${mm}.${yyyy}`; // ✅ TT.MM.JJJJ
 }
 
 /* ================= Normalizer ================= */
@@ -143,30 +143,6 @@ function readOffers() {
   return offers;
 }
 
-/* ================= Schema.org ================= */
-
-function buildSchemaItemList(offers) {
-  const items = offers.map((o, i) => ({
-    "@type": "ListItem",
-    position: i + 1,
-    name: o.title,
-    url: "https://angebote.unger-warburg.de/angebote.html",
-  }));
-
-  return `
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  "name": "Aktuelle Angebote von Unger Haushalts- & Medientechnik",
-  "url": "https://angebote.unger-warburg.de/angebote.html",
-  "numberOfItems": ${items.length},
-  "itemListElement": ${JSON.stringify(items, null, 2)}
-}
-</script>
-`.trim();
-}
-
 /* ================= Render Details ================= */
 
 function renderDetails(o) {
@@ -189,9 +165,7 @@ function renderDetails(o) {
       )
       .join("");
   } else if (o.highlights.length) {
-    body += o.highlights
-      .map((h) => `<p>${escapeHtml(h)}</p>`)
-      .join("");
+    body += o.highlights.map((h) => `<p>${escapeHtml(h)}</p>`).join("");
   }
 
   if (!body) return "";
@@ -247,6 +221,14 @@ function renderTile(o) {
     }
   </div>
 
+  ${
+    o.valid_to
+      ? `<p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis ${escapeHtml(
+          formatDateDE(o.valid_to)
+        )}</p>`
+      : ""
+  }
+
   ${o.note ? `<p class="note">${escapeHtml(o.note)}</p>` : ""}
 
   ${renderDetails(o)}
@@ -269,11 +251,7 @@ function renderPage(offers) {
         .join("")}</div>`
     : `<p>Aktuell keine Angebote.</p>`;
 
-  const schema = buildSchemaItemList(offers);
-
-  return tpl
-    .replace("{{CONTENT}}", content)
-    .replace("{{SCHEMA_JSON}}", schema);
+  return tpl.replace("{{CONTENT}}", content);
 }
 
 /* ================= Build ================= */
@@ -285,3 +263,4 @@ fs.writeFileSync(OUT_INDEX, html, "utf8");
 fs.writeFileSync(OUT_ANGEBOTE, html, "utf8");
 
 console.log(`✔ Angebote gebaut: ${offers.length}`);
+
