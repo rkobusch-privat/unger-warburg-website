@@ -1,0 +1,49 @@
+{
+  "active": true,
+  "cta_link": "https://unger-warburg.de/#kontakt",
+  "price": "169,- Euro",
+  "featured": false,
+  "uvp": "329,99 Euro",
+  "bullets": [
+    "Endlich laut aufdrehen! Der tragbare wasserdichte Lautsprecher JBL Xtreme 4 liefert selbst bei höchster Lautstärke mächtigen JBL Pro Sound der nächsten Stufe mit einer außergewöhnlichen Dynamik, die er zwei leistungsstarken Tieftönern und zwei Hochtönern verdankt. Zwei pumpende JBL Passivradiatoren produzieren einen tieferen Bass, der mitreißt.",
+    "Du möchtest deine Musik mit nach draußen nehmen? Der praktische Schultergurt macht es einfach, während die robuste Gummiummantelung und sein wasserdichtes und staubdichtes Design nach Schutzklasse IP67 sicherstellen, dass ein plötzlicher Regen oder ein Bad im See dem Spaß kein Ende bereiten.",
+    "Wenn du noch mehr Sound brauchst, koppelst du einfach zwei Xtreme 4 und genießt Stereo-Sound. Für deine nächste Party verbindest du den Xtreme 4 per Auracast mit kompatiblen tragbaren JBL-Lautsprechern. Dann chillen deine Freunde am Pool zur gleichen Playlist wie alle, die sich im Haus aufhalten.",
+    "Dank 24 Stunden Wiedergabezeit und einer praktischen Powerbank für deinen Lautsprecher reicht es, wenn du ihn erst am Morgen wieder auflädst. Darüber hinaus ist er mit Recycling-Kunststoff und Recycling-Gewebe hergestellt.",
+    "Der JBL Xtreme 4 liefert mitreißenden Sound – überall."
+  ],
+  "note": "Bass, der draußen eskaliert.",
+  "title": " JBL Xtreme 4 Camouflage ",
+  "image": "/assets/offers/jbl-xtreme-4-camouflage.jpg",
+  "features": [
+    {
+      "title": "Ausgangsleistung (W) ",
+      "description": "2 x 30W RMS woofer + 2 x 20W RMS tweeter (AC power mode), 2 x 20W RMS woofer + 2 x 15W RMS tweeter (Battery mode) "
+    },
+    {
+      "title": "Dynamischer Frequenzgang (Hz) ",
+      "description": "44 Hz - 20k Hz "
+    },
+    {
+      "title": "Abmessungen (Breite x Höhe x Tiefe) (cm) ",
+      "description": "29.7 x 14.9 x 14.1 "
+    },
+    {
+      "title": "Gewicht (kg) ",
+      "description": "2.1 "
+    },
+    {
+      "title": "Ladezeit (Std.) ",
+      "description": "3.5"
+    },
+    {
+      "title": "Musikwiedergabezeit (Std.) ",
+      "description": "24"
+    },
+    {
+      "description": "Bluetooth                           Ja \nCharging cable                   Nein \nPowerbank                         Ja \nSpritzwasserfest                 Ja \nSupports Auracast              Ja \nWasserdicht                        Ja \nWireless                              Ja \nDustproof                           Ja \nMultipoint-Verbindung      Ja \nWiederaufladbarer Akku    Ja \nSchnellladung (5 Minuten entsprechen 1 Stunde Wiedergabezeit)    Ja \nIPX-Klassifizierung              IP67 ",
+      "title": "Ausstattung"
+    }
+  ],
+  "category": "Lautsprecher",
+  "valid_to": "2026-02-07"
+}
