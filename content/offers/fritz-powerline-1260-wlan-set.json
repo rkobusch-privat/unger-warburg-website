@@ -1,0 +1,37 @@
+{
+  "active": true,
+  "cta_link": "https://unger-warburg.de/#kontakt",
+  "price": "109,90 Euro",
+  "featured": false,
+  "uvp": "154,90 Euro",
+  "bullets": [
+    "Erweitert das Heimnetz über die hausinterne Stromleitung mit Gigabit-Powerline ",
+    "Bringt WLAN in jeden Raum ",
+    "Intelligentes WLAN Mesh ",
+    "1 x Gigabit-LAN für die Anbindung netzwerkfähiger Geräte ",
+    "Spielend leicht eingerichtet "
+  ],
+  "note": "Schnelles Internet aus der Steckdose.",
+  "title": " FRITZ!Powerline 1260 WLAN Set",
+  "image": "/assets/offers/avm-fritz-powerline-1260e-starter-set.jpg",
+  "features": [
+    {
+      "title": "Anschlüsse",
+      "description": "1 x Gigabit-LAN für die Anbindung von Smart-TV, Set-top-Box, Blu-ray, NAS, Hi-Fi, Spielekonsole u.a. an FRITZ!Box und Internet"
+    },
+    {
+      "title": "Powerline",
+      "description": "bis zu 1.200 MBit/s Powerline-Datenrate und robuste Verbindungen bei großen Entfernungen im Netzwerk"
+    },
+    {
+      "title": "WLAN",
+      "description": "bis zu 1.266 MBit/s über Wi-Fi 5"
+    },
+    {
+      "title": "Abmessungen (B x H x T)",
+      "description": "67 x 132 x 32 mm (ohne Stecker)"
+    }
+  ],
+  "category": "WLAN",
+  "valid_to": "2026-02-07"
+}
