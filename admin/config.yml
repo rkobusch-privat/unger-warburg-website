@@ -55,9 +55,9 @@ collections:
       - label: "Bulletpoints (Kurzinfos)"
         name: "bullets"
         widget: "list"
-        min: 5
+        min: 0
         max: 10
-        hint: "5–10 kurze Fakten (z. B. NoFrost, 258 l, Energieverbrauch 116 kWh/Jahr)"
+        hint: "0–10 kurze Fakten (z. B. NoFrost, 258 l, Energieverbrauch 116 kWh/Jahr)"
         field:
           label: "Bullet"
           name: "bullet"
