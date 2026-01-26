@@ -4,7 +4,7 @@
   "price": "689,- Euro",
   "featured": false,
   "uvp": "769,- Euro",
-  "teaser": "Mobil. Schnell. Einfach erledigt.",
+  "teaser": "",
   "bullets": [
     "Intel® Core™ i5-1235U Prozessor (12M Cache, bis zu 4.40 GHz)",
     "Windows 11 Pro",
@@ -15,6 +15,7 @@
     "Intel® Iris® XE Graphics (if in dual-channel memory mode)",
     "500 GB Gesamtspeicherkapazität"
   ],
+  "note": "Mobil. Schnell. Einfach erledigt.",
   "title": "Terra MOBILE 1517 i5-1235U W11",
   "image": "/assets/offers/item122077820000.jpg",
   "category": "Computer",
