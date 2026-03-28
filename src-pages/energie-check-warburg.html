@@ -177,6 +177,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#content">Zum Inhalt springen</a>
   {{TOPBAR}}
   {{HEADER}}
 
@@ -214,8 +215,9 @@
               zum Beispiel die <strong>Kündigung beim bisherigen Anbieter</strong>.
             </div>
 
-            <form name="energie-check" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/danke.html">
+            <form name="energie-check" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/danke.html" id="energieCheckForm">
               <input type="hidden" name="form-name" value="energie-check">
+              <input type="hidden" name="anfrage_titel" id="anfrage_titel" value="">
               <p style="display:none;">
                 <label>Bitte dieses Feld nicht ausfüllen: <input name="bot-field"></label>
               </p>
@@ -235,14 +237,9 @@
                   <input class="form-input" type="text" id="anbieter" name="anbieter" required>
                 </div>
 
-                <div class="form-field">
-                  <label class="form-label" for="vorname">Vorname</label>
-                  <input class="form-input" type="text" id="vorname" name="vorname" required>
-                </div>
-
-                <div class="form-field">
-                  <label class="form-label" for="nachname">Nachname</label>
-                  <input class="form-input" type="text" id="nachname" name="nachname" required>
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="name">Name</label>
+                  <input class="form-input" type="text" id="name" name="name" required>
                 </div>
 
                 <div class="form-field">
@@ -395,6 +392,30 @@
   </main>
 
   {{FOOTER}}
+
+  <script>
+    (function () {
+      var form = document.getElementById("energieCheckForm");
+      if (!form) return;
+
+      form.addEventListener("submit", function () {
+        var vertragstyp = document.getElementById("vertragstyp") ? document.getElementById("vertragstyp").value.trim() : "";
+        var name = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+        var ort = document.getElementById("ort") ? document.getElementById("ort").value.trim() : "";
+        var titelFeld = document.getElementById("anfrage_titel");
+
+        if (!titelFeld) return;
+
+        var teile = [];
+        if (vertragstyp) teile.push(vertragstyp);
+        if (name) teile.push(name);
+        if (ort) teile.push(ort);
+
+        titelFeld.value = teile.join(" – ");
+      });
+    })();
+  </script>
+
   {{YEAR_SCRIPT}}
   <script src="script.js"></script>
 </body>
