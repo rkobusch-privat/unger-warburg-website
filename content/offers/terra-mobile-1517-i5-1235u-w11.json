@@ -1,0 +1,23 @@
+{
+  "active": true,
+  "cta_link": "https://unger-warburg.de/#kontakt",
+  "price": "649,- Euro",
+  "featured": false,
+  "uvp": "769,- Euro",
+  "teaser": "",
+  "bullets": [
+    "Intel® Core™ i5-1235U Prozessor (12M Cache, bis zu 4.40 GHz)",
+    "Windows 11 Pro",
+    "Displaygröße 39.6 cm ( 15.6\" )",
+    "1920 x 1080 Display-Auflösung",
+    "Display-Typ Non Glare",
+    "16 GB Speicherkapazität",
+    "Intel® Iris® XE Graphics (if in dual-channel memory mode)",
+    "500 GB Gesamtspeicherkapazität"
+  ],
+  "note": "Mobil. Schnell. Einfach erledigt.",
+  "title": "Terra MOBILE 1517 i5-1235U W11",
+  "image": "/assets/offers/item122077820000.jpg",
+  "category": "Computer",
+  "valid_to": "2026-02-28"
+}

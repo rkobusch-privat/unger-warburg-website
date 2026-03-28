@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- SEO -->
+  <title>Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik</title>
+  <meta name="description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+
+  <link rel="canonical" href="https://angebote.unger-warburg.de/angebote.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
+  <meta property="og:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta property="og:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+  <meta property="og:url" content="https://angebote.unger-warburg.de/angebote.html" />
+  <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta name="twitter:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+  <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Angebots-spezifische Ergänzungen -->
+  <style>
+    /* Grid spacing (nur fein) */
+    .offers-grid { gap: 16px; }
+
+    /* ✅ Karten ruhiger: feste Slot-Logik */
+    .tile{
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* ✅ Titel bekommt "Slot" (ca. 2 Zeilen) => Preiszeile wirkt einheitlicher */
+    .tile h3{
+      margin: 0 0 10px;
+      min-height: 56px;
+      line-height: 1.25;
+    }
+
+    /* ✅ Bildslot: feste Höhe + Bild mittig (kein Crop) */
+    .offer-img{
+      width:100%;
+      height:240px;
+      object-fit:contain;
+      object-position:center;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      margin:0 0 12px;
+      display:block;
+    }
+    /* Kompatibel mit eurer Auto-Klassifizierung */
+    .offer-img.is-portrait{
+      height:240px;
+      object-fit:contain;
+    }
+    .offer-img.is-landscape{
+      height:240px;
+      object-fit:contain;
+    }
+
+    /* ✅ Preisblock: gleiche Baseline + stabil, wenn UVP fehlt */
+    .price-row{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 4px;
+      min-height: 34px;
+    }
+    .price-row strong{
+      font-size:20px;
+      font-weight:1000;
+    }
+
+    .offer-rrp{ color: var(--muted); font-weight: 800; }
+    .offer-rrp span{ text-decoration: line-through; margin-left: 6px; }
+
+    /* Datumzeile & Note im gleichen Rhythmus */
+    .muted.small{ margin: 6px 0 0; }
+    .note{ margin:10px 0 0; color: var(--muted); }
+
+    /* Details */
+    .offer-details{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .offer-details summary{
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .offer-details__body{
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .offer-details__body p{ margin: 10px 0 0; }
+
+    .feature{ padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .feature:last-child{ border-bottom: none; }
+    .feature__title{ font-weight: 1000; color: var(--ink); margin-bottom: 6px; }
+    .feature__text{ color: var(--muted); }
+
+    /* ✅ Spar-Badge */
+    .offer-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: fit-content;
+      background: var(--accent);
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+      padding:4px 10px;
+      border-radius:999px;
+      margin: 6px 0 10px;
+      line-height:1;
+    }
+
+    /* ✅ Featured-Angebote */
+    .offer-card--featured{
+      border: 2px solid var(--accent);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Button spacing */
+    .tile .btn{ margin-top: 12px; }
+  </style>
+</head>
+
+<body>
+
+<a class="skip-link" href="#content">Zum Inhalt springen</a>
+
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+      <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
+    </div>
+    <div class="topbar__right">
+      <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
+      <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+    </div>
+  </div>
+</div>
+
+<header class="header" id="start">
+  <div class="container header__inner">
+    <a class="brand" href="https://unger-warburg.de/">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleLines" aria-hidden="true"></span>
+        <span class="sr-only">Menü</span>
+      </button>
+
+      <ul class="nav__menu" id="navMenu">
+        <li><a href="https://unger-warburg.de/">Start</a></li>
+        <li><a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
+        <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
+        <li><a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="https://unger-warburg.de/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="content">
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumbs">
+        <a href="https://unger-warburg.de/">Start</a> › Angebote
+      </p>
+
+      <h1>Angebote</h1>
+
+      <p class="lead">
+        Attraktive Preise auf ausgewählte Geräte – jetzt sparen und persönlich beraten lassen.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a>
+        <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Direkt schreiben</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      {{CONTENT}}
+
+      <p class="muted small" style="margin-top:18px">
+        Alle Preise inkl. gesetzlicher MwSt. · Angebote solange der Vorrat reicht.
+      </p>
+      <p class="muted small" style="margin-top:6px">
+        UVP = unverbindliche Preisempfehlung des Herstellers.
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+    </div>
+
+    <div class="footer__links">
+      <a href="https://unger-warburg.de/">Start</a>
+      <a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a>
+      <a href="https://unger-warburg.de/handy-warburg.html">Handy</a>
+      <a href="https://unger-warburg.de/computer-warburg.html">Computer</a>
+      <a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="https://unger-warburg.de/impressum.html">Impressum</a>
+      <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
+    </div>
+
+    <div class="footer__fine">
+      © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script>
+(function () {
+  function tag(img) {
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+    if (img.naturalHeight > img.naturalWidth * 1.15) img.classList.add("is-portrait");
+    else img.classList.add("is-landscape");
+  }
+  function init() {
+    document.querySelectorAll("img.offer-img").forEach(function (img) {
+      if (img.complete) tag(img);
+      else img.addEventListener("load", function () { tag(img); }, { once: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>

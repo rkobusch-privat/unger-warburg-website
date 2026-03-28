@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- SEO -->
+  <title>Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik</title>
+  <meta name="description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+
+  <link rel="canonical" href="https://angebote.unger-warburg.de/angebote.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
+  <meta property="og:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta property="og:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+  <meta property="og:url" content="https://angebote.unger-warburg.de/angebote.html" />
+  <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta name="twitter:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+  <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Angebots-spezifische Ergänzungen -->
+  <style>
+    /* Grid spacing (nur fein) */
+    .offers-grid { gap: 16px; }
+
+    /* ✅ Karten ruhiger: feste Slot-Logik */
+    .tile{
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* ✅ Titel bekommt "Slot" (ca. 2 Zeilen) => Preiszeile wirkt einheitlicher */
+    .tile h3{
+      margin: 0 0 10px;
+      min-height: 56px;
+      line-height: 1.25;
+    }
+
+    /* ✅ Bildslot: feste Höhe + Bild mittig (kein Crop) */
+    .offer-img{
+      width:100%;
+      height:240px;
+      object-fit:contain;
+      object-position:center;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      margin:0 0 12px;
+      display:block;
+    }
+    /* Kompatibel mit eurer Auto-Klassifizierung */
+    .offer-img.is-portrait{
+      height:240px;
+      object-fit:contain;
+    }
+    .offer-img.is-landscape{
+      height:240px;
+      object-fit:contain;
+    }
+
+    /* ✅ Preisblock: gleiche Baseline + stabil, wenn UVP fehlt */
+    .price-row{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 4px;
+      min-height: 34px;
+    }
+    .price-row strong{
+      font-size:20px;
+      font-weight:1000;
+    }
+
+    .offer-rrp{ color: var(--muted); font-weight: 800; }
+    .offer-rrp span{ text-decoration: line-through; margin-left: 6px; }
+
+    /* Datumzeile & Note im gleichen Rhythmus */
+    .muted.small{ margin: 6px 0 0; }
+    .note{ margin:10px 0 0; color: var(--muted); }
+
+    /* Details */
+    .offer-details{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .offer-details summary{
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .offer-details__body{
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .offer-details__body p{ margin: 10px 0 0; }
+
+    .feature{ padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .feature:last-child{ border-bottom: none; }
+    .feature__title{ font-weight: 1000; color: var(--ink); margin-bottom: 6px; }
+    .feature__text{ color: var(--muted); }
+
+    /* ✅ Spar-Badge */
+    .offer-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: fit-content;
+      background: var(--accent);
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+      padding:4px 10px;
+      border-radius:999px;
+      margin: 6px 0 10px;
+      line-height:1;
+    }
+
+    /* ✅ Featured-Angebote */
+    .offer-card--featured{
+      border: 2px solid var(--accent);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Button spacing */
+    .tile .btn{ margin-top: 12px; }
+  </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Aktuelle Angebote von Unger Haushalts- & Medientechnik",
+  "url": "https://angebote.unger-warburg.de/angebote.html",
+  "numberOfItems": 5,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "url": "https://angebote.unger-warburg.de/angebote.html#liebherr-cbnsda-572i-22-kuhl-gefrierkombination-mit-biofresh-und-nofrost",
+      "item": {
+        "@type": "Product",
+        "name": "Liebherr CBNsda 572i-22 Kühl-Gefrierkombination mit BioFresh und NoFrost",
+        "image": [
+          "https://angebote.unger-warburg.de/assets/offers/liebherr-cbnsda-572i-22.jpg"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "url": "https://angebote.unger-warburg.de/angebote.html#liebherr-cbnsda-572i-22-kuhl-gefrierkombination-mit-biofresh-und-nofrost",
+          "price": 999,
+          "priceValidUntil": "2026-02-28"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "url": "https://angebote.unger-warburg.de/angebote.html#fritz-powerline-1260-wlan-set",
+      "item": {
+        "@type": "Product",
+        "name": " FRITZ!Powerline 1260 WLAN Set",
+        "image": [
+          "https://angebote.unger-warburg.de/assets/offers/avm-fritz-powerline-1260e-starter-set.jpg"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "url": "https://angebote.unger-warburg.de/angebote.html#fritz-powerline-1260-wlan-set",
+          "price": 109.9,
+          "priceValidUntil": "2026-02-28"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "url": "https://angebote.unger-warburg.de/angebote.html#jbl-xtreme-4-camouflage",
+      "item": {
+        "@type": "Product",
+        "name": " JBL Xtreme 4 Camouflage ",
+        "image": [
+          "https://angebote.unger-warburg.de/assets/offers/jbl-xtreme-4-camouflage.jpg"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "url": "https://angebote.unger-warburg.de/angebote.html#jbl-xtreme-4-camouflage",
+          "price": 169,
+          "priceValidUntil": "2026-02-28"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "url": "https://angebote.unger-warburg.de/angebote.html#jura-z10-aluminium-dark-inox",
+      "item": {
+        "@type": "Product",
+        "name": " Jura Z10 Aluminium Dark Inox ",
+        "image": [
+          "https://angebote.unger-warburg.de/assets/offers/jura-z10-aluminium-dark-inox.jpg"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "url": "https://angebote.unger-warburg.de/angebote.html#jura-z10-aluminium-dark-inox",
+          "price": 1899,
+          "priceValidUntil": "2026-03-01"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "url": "https://angebote.unger-warburg.de/angebote.html#terra-mobile-1517-i5-1235u-w11",
+      "item": {
+        "@type": "Product",
+        "name": "Terra MOBILE 1517 i5-1235U W11",
+        "image": [
+          "https://angebote.unger-warburg.de/assets/offers/item122077820000.jpg"
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "url": "https://angebote.unger-warburg.de/angebote.html#terra-mobile-1517-i5-1235u-w11",
+          "price": 649,
+          "priceValidUntil": "2026-02-28"
+        }
+      }
+    }
+  ]
+}
+</script>
+</head>
+
+<body>
+
+<a class="skip-link" href="#content">Zum Inhalt springen</a>
+
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+      <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
+    </div>
+    <div class="topbar__right">
+      <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
+      <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+    </div>
+  </div>
+</div>
+
+<header class="header" id="start">
+  <div class="container header__inner">
+    <a class="brand" href="https://unger-warburg.de/">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleLines" aria-hidden="true"></span>
+        <span class="sr-only">Menü</span>
+      </button>
+
+      <ul class="nav__menu" id="navMenu">
+        <li><a href="https://unger-warburg.de/">Start</a></li>
+        <li><a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
+        <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
+        <li><a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="https://unger-warburg.de/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="content">
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumbs">
+        <a href="https://unger-warburg.de/">Start</a> › Angebote
+      </p>
+
+      <h1>Angebote</h1>
+
+      <p class="lead">
+        Attraktive Preise auf ausgewählte Geräte – jetzt sparen und persönlich beraten lassen.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a>
+        <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Direkt schreiben</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <div class="grid offers-grid">
+<article id="liebherr-cbnsda-572i-22-kuhl-gefrierkombination-mit-biofresh-und-nofrost" class="tile offer-card--featured">
+  <span class="offer-badge">-38%</span>
+
+  <h3>Liebherr CBNsda 572i-22 Kühl-Gefrierkombination mit BioFresh und NoFrost</h3>
+
+  <img src="/assets/offers/liebherr-cbnsda-572i-22.jpg" alt="Liebherr CBNsda 572i-22 Kühl-Gefrierkombination mit BioFresh und NoFrost" class="offer-img" loading="lazy">
+
+  <div class="price-row">
+    <strong>999 €</strong>
+    <span class="offer-rrp">UVP <span>1.599 €</span></span>
+  </div>
+
+  <p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis 28.02.2026</p>
+
+  <p class="note">Produktinformationen Energieverbrauch pro Jahr 116 kWh/Jahr, Nutzinhalt des Kühlfachs 258 l, Nutzinhalt des Gefrierfachs 103 l</p>
+
+  
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    <ul class="list"><li>NoFrost – nie abtauen</li><li>BioFresh – länger frisch</li><li>258 l Kühlteil</li><li>103 l Gefrierteil</li><li>Energieverbrauch 116 kWh/Jahr</li><li>DuoCooling</li><li>SuperCool / SuperFrost</li><li>Touch-Display</li><li>Türanschlag wechselbar</li></ul>
+        <div class="feature">
+          <div class="feature__title">BluPerformance</div>
+          <div class="feature__text">Stellen Sie sich folgendes Bild eines perfekten Kühlschranks vor: Ein zeitlos schönes Design mit glatten und reinigungsfreundlichen Oberflächen, der Ihre Lebensmittel schnell auf ideale Temperatur herunterkühlt, für längere Frische sorgt und dabei auch noch energieeffizient arbeitet. 
+
+Ein Kühlschrank der sich durch den Einsatz neuartiger Technologien als echtes Raumwunder erweist und mit komfortabler Elektronik Ihr tägliches Leben vereinfacht. Das ist BluPerformance – die neue Dimension des Kühlen und Gefrierens.</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">NoFrost</div>
+          <div class="feature__text">Nie mehr abtauen.  Wenn Sie Ihr Gefrierfach öffnen, möchten Sie gefrorene Lebensmittel sehen – aber sicher kein Eis und keinen Reif. NoFrost schützt den Gefrierraum vor unerwünschter Vereisung, die viel Energie verbraucht und mitunter teuer ist. NoFrost bedeutet: Nie mehr das Gefrierfach mühsam und zeitintensiv abtauen, mehr Zeit für andere Dinge haben – und Geld sparen.</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">DuoCooling</div>
+          <div class="feature__text">Der Liebherr-Frischestandard.  Liebherr legt schon bei der Entwicklung Wert darauf, dass die Technologien die jeweiligen Bedürfnisse der Lebensmittel in puncto Frische und Haltbarkeit berücksichtigen. 
+
+Dank DuoCooling lässt sich bei Kühl- und Gefrierkombinationen die Temperatur präzise und unabhängig im Kühl- und Gefrierteil einstellen und regeln. Davon profitieren die Frische und die Haltbarkeit Ihrer Lebensmittel.</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">BioFresh</div>
+          <div class="feature__text">Länger lecker: Frische ist eine Frage der Technik.  Wer kann schon jeden Tag einkaufen gehen, um Lebensmittel marktfrisch zu genießen? Vor allem empfindliche Lebensmittel wie frischer Salat, Beeren oder auch Fisch und Meeresfrüchte sind bei herkömmlicher Lagerung im Kühlschrank nicht lange haltbar und müssen schnell verzehrt oder sogar weggeworfen werden. 
+
+Mit BioFresh hat Liebherr die Technologie entwickelt, um die Haltbarkeit von Lebensmittel deutlich zu verlängern und dabei auch noch Vitamine und Nährstoffe länger als gewöhnlich zu erhalten. Dank der idealen Temperaturen von knapp über 0 °C in Kombination mit der perfekten Luftfeuchtigkeit lagern Ihre Lebensmittel unter den optimalen Bedingungen. So genießen Sie Ihre Lebensmittel auch noch Tage später wie frisch gekauft vom Markt, werfen weniger Lebensmittel weg und müssen auch noch seltener einkaufen. 
+
+Dank BioFresh bleibt Ihr Salat 8 Tage länger frisch als im normalen Kühlbereich, Karotten und Äpfel sogar bis zu 30 Tage länger.</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">SmartDevice</div>
+          <div class="feature__text">Ihr Eintritt in das Smart Home.  Mit der SmartDeviceBox können Sie Ihr Liebherr-Gerät in bereits bestehende Smarthome-Lösungen einbinden und profitieren so von zahlreichen Funktionen, die Ihren Alltag spürbar vereinfachen. So erinnert Sie zum Beispiel der integrierte BottleTimer Ihrer Kühl-Gefrierkombination über Ihr smartes Lichtsystem (z.B. Philips Hue), dass noch Flaschen im Gefrierfach sind. 
+
+Oder steuern Sie doch Ihr Kühlgerät einfach von unterwegs aus über Ihr Tablet oder Smartphone – bequem über die SmartDevice-App. Aktuell verfügen schon mehr als 120 modular vernetzbare Stand- und Einbaugeräte über die SmartDevice-Technologie.</div>
+        </div>
+  </div>
+</details>
+
+  <a class="btn btn--ghost" href="/kontakt.html">Anfragen</a>
+</article>
+<article id="fritz-powerline-1260-wlan-set" class="tile">
+  <span class="offer-badge">-29%</span>
+
+  <h3> FRITZ!Powerline 1260 WLAN Set</h3>
+
+  <img src="/assets/offers/avm-fritz-powerline-1260e-starter-set.jpg" alt=" FRITZ!Powerline 1260 WLAN Set" class="offer-img" loading="lazy">
+
+  <div class="price-row">
+    <strong>109,90 Euro</strong>
+    <span class="offer-rrp">UVP <span>154,90 Euro</span></span>
+  </div>
+
+  <p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis 28.02.2026</p>
+
+  <p class="note">Schnelles Internet aus der Steckdose.</p>
+
+  
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    <ul class="list"><li>Erweitert das Heimnetz über die hausinterne Stromleitung mit Gigabit-Powerline</li><li>Bringt WLAN in jeden Raum</li><li>Intelligentes WLAN Mesh</li><li>1 x Gigabit-LAN für die Anbindung netzwerkfähiger Geräte</li><li>Spielend leicht eingerichtet</li></ul>
+        <div class="feature">
+          <div class="feature__title">Anschlüsse</div>
+          <div class="feature__text">1 x Gigabit-LAN für die Anbindung von Smart-TV, Set-top-Box, Blu-ray, NAS, Hi-Fi, Spielekonsole u.a. an FRITZ!Box und Internet</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Powerline</div>
+          <div class="feature__text">bis zu 1.200 MBit/s Powerline-Datenrate und robuste Verbindungen bei großen Entfernungen im Netzwerk</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">WLAN</div>
+          <div class="feature__text">bis zu 1.266 MBit/s über Wi-Fi 5</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Abmessungen (B x H x T)</div>
+          <div class="feature__text">67 x 132 x 32 mm (ohne Stecker)</div>
+        </div>
+  </div>
+</details>
+
+  <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Anfragen</a>
+</article>
+<article id="jbl-xtreme-4-camouflage" class="tile">
+  <span class="offer-badge">-49%</span>
+
+  <h3> JBL Xtreme 4 Camouflage </h3>
+
+  <img src="/assets/offers/jbl-xtreme-4-camouflage.jpg" alt=" JBL Xtreme 4 Camouflage " class="offer-img" loading="lazy">
+
+  <div class="price-row">
+    <strong>169,- Euro</strong>
+    <span class="offer-rrp">UVP <span>329,99 Euro</span></span>
+  </div>
+
+  <p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis 28.02.2026</p>
+
+  <p class="note">Bass, der draußen eskaliert.</p>
+
+  
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    <ul class="list"><li>Endlich laut aufdrehen! Der tragbare wasserdichte Lautsprecher JBL Xtreme 4 liefert selbst bei höchster Lautstärke mächtigen JBL Pro Sound der nächsten Stufe mit einer außergewöhnlichen Dynamik, die er zwei leistungsstarken Tieftönern und zwei Hochtönern verdankt. Zwei pumpende JBL Passivradiatoren produzieren einen tieferen Bass, der mitreißt.</li><li>Du möchtest deine Musik mit nach draußen nehmen? Der praktische Schultergurt macht es einfach, während die robuste Gummiummantelung und sein wasserdichtes und staubdichtes Design nach Schutzklasse IP67 sicherstellen, dass ein plötzlicher Regen oder ein Bad im See dem Spaß kein Ende bereiten.</li><li>Wenn du noch mehr Sound brauchst, koppelst du einfach zwei Xtreme 4 und genießt Stereo-Sound. Für deine nächste Party verbindest du den Xtreme 4 per Auracast mit kompatiblen tragbaren JBL-Lautsprechern. Dann chillen deine Freunde am Pool zur gleichen Playlist wie alle, die sich im Haus aufhalten.</li><li>Dank 24 Stunden Wiedergabezeit und einer praktischen Powerbank für deinen Lautsprecher reicht es, wenn du ihn erst am Morgen wieder auflädst. Darüber hinaus ist er mit Recycling-Kunststoff und Recycling-Gewebe hergestellt.</li><li>Der JBL Xtreme 4 liefert mitreißenden Sound – überall.</li></ul>
+        <div class="feature">
+          <div class="feature__title">Ausgangsleistung (W)</div>
+          <div class="feature__text">2 x 30W RMS woofer + 2 x 20W RMS tweeter (AC power mode), 2 x 20W RMS woofer + 2 x 15W RMS tweeter (Battery mode)</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Dynamischer Frequenzgang (Hz)</div>
+          <div class="feature__text">44 Hz - 20k Hz</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Abmessungen (Breite x Höhe x Tiefe) (cm)</div>
+          <div class="feature__text">29.7 x 14.9 x 14.1</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Gewicht (kg)</div>
+          <div class="feature__text">2.1</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Ladezeit (Std.)</div>
+          <div class="feature__text">3.5</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Musikwiedergabezeit (Std.)</div>
+          <div class="feature__text">24</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Ausstattung</div>
+          <div class="feature__text">Bluetooth                           Ja 
+Charging cable                   Nein 
+Powerbank                         Ja 
+Spritzwasserfest                 Ja 
+Supports Auracast              Ja 
+Wasserdicht                        Ja 
+Wireless                              Ja 
+Dustproof                           Ja 
+Multipoint-Verbindung      Ja 
+Wiederaufladbarer Akku    Ja 
+Schnellladung (5 Minuten entsprechen 1 Stunde Wiedergabezeit)    Ja 
+IPX-Klassifizierung              IP67</div>
+        </div>
+  </div>
+</details>
+
+  <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Anfragen</a>
+</article>
+<article id="jura-z10-aluminium-dark-inox" class="tile">
+  <span class="offer-badge">-27%</span>
+
+  <h3> Jura Z10 Aluminium Dark Inox </h3>
+
+  <img src="/assets/offers/jura-z10-aluminium-dark-inox.jpg" alt=" Jura Z10 Aluminium Dark Inox " class="offer-img" loading="lazy">
+
+  <div class="price-row">
+    <strong>1.899,- Euro</strong>
+    <span class="offer-rrp">UVP <span>2.599,- Euro</span></span>
+  </div>
+
+  <p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis 01.03.2026</p>
+
+  <p class="note">Jura Kaffeevollautomaten verstehen es bestens, Kundenwünsche zu erfüllen, von denen wir nicht wussten, dass wir sie hatten.</p>
+
+  
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    <ul class="list"><li>Product Recognising Grinder (P.R.G.) mit blitzschneller, automatischer Mahlgradverstellung für jede Kaffeespezialität</li><li>Cold-Brew-Kaffeespezialitäten auf Knopfdruck dank innovativem Cold Extraction Process</li><li>Brüheinheit Generation 8 mit 3D-Brühtechnologie für ultimative Aromaentfaltung</li><li>Hochwertiges Rundumdesign mit konvex-konkav geformter Front, Wassertank in Wellendesign und durchdachten Details</li><li>Wi-Fi Connect</li></ul>
+        <div class="feature">
+          <div class="feature__title">Druck (bar)</div>
+          <div class="feature__text">15</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Drucksystem</div>
+          <div class="feature__text">Pumpdrucksystem</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Heizsystem</div>
+          <div class="feature__text">Thermoblock-Heizsystem</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Leistungsaufnahme (W)</div>
+          <div class="feature__text">1.450,00</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Reinigung</div>
+          <div class="feature__text">Autom. Reinigungs- u. Entkalkungsprogramm</div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Breite / Höhe / Tiefe / Gewicht</div>
+          <div class="feature__text">32 cm / 38 cm / 45 cm / 12,30 kg</div>
+        </div>
+  </div>
+</details>
+
+  <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Anfragen</a>
+</article>
+<article id="terra-mobile-1517-i5-1235u-w11" class="tile">
+  <span class="offer-badge">-16%</span>
+
+  <h3>Terra MOBILE 1517 i5-1235U W11</h3>
+
+  <img src="/assets/offers/item122077820000.jpg" alt="Terra MOBILE 1517 i5-1235U W11" class="offer-img" loading="lazy">
+
+  <div class="price-row">
+    <strong>649,- Euro</strong>
+    <span class="offer-rrp">UVP <span>769,- Euro</span></span>
+  </div>
+
+  <p class="muted small" style="margin:6px 0 0">Angebot ist gültig bis 28.02.2026</p>
+
+  <p class="note">Mobil. Schnell. Einfach erledigt.</p>
+
+  
+<details class="offer-details">
+  <summary>Details anzeigen</summary>
+  <div class="offer-details__body">
+    <ul class="list"><li>Intel® Core™ i5-1235U Prozessor (12M Cache, bis zu 4.40 GHz)</li><li>Windows 11 Pro</li><li>Displaygröße 39.6 cm ( 15.6&quot; )</li><li>1920 x 1080 Display-Auflösung</li><li>Display-Typ Non Glare</li><li>16 GB Speicherkapazität</li><li>Intel® Iris® XE Graphics (if in dual-channel memory mode)</li><li>500 GB Gesamtspeicherkapazität</li></ul>
+  </div>
+</details>
+
+  <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Anfragen</a>
+</article></div>
+
+      <p class="muted small" style="margin-top:18px">
+        Alle Preise inkl. gesetzlicher MwSt. · Angebote solange der Vorrat reicht.
+      </p>
+      <p class="muted small" style="margin-top:6px">
+        UVP = unverbindliche Preisempfehlung des Herstellers.
+      </p>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+    </div>
+
+    <div class="footer__links">
+      <a href="https://unger-warburg.de/">Start</a>
+      <a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a>
+      <a href="https://unger-warburg.de/handy-warburg.html">Handy</a>
+      <a href="https://unger-warburg.de/computer-warburg.html">Computer</a>
+      <a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="https://unger-warburg.de/impressum.html">Impressum</a>
+      <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
+    </div>
+
+    <div class="footer__fine">
+      © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script>
+(function () {
+  function tag(img) {
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+    if (img.naturalHeight > img.naturalWidth * 1.15) img.classList.add("is-portrait");
+    else img.classList.add("is-landscape");
+  }
+  function init() {
+    document.querySelectorAll("img.offer-img").forEach(function (img) {
+      if (img.complete) tag(img);
+      else img.addEventListener("load", function () { tag(img); }, { once: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>

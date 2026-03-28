@@ -1,0 +1,125 @@
+backend:
+  name: github
+  repo: rkobusch-privat/unger-warburg-website
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+media_folder: "assets/offers"
+public_folder: "/assets/offers"
+
+collections:
+  - name: "offers"
+    label: "Angebote"
+    label_singular: "Angebot"
+    folder: "content/offers"
+    create: true
+    extension: "json"
+    format: "json"
+
+    # 👉 Slug = Dateiname, automatisch aus dem Titel
+    slug: "{{slug}}"
+
+    identifier_field: "title"
+    summary: "{{title}} — {{price}}"
+
+    fields:
+      - label: "Titel"
+        name: "title"
+        widget: "string"
+        hint: "Produktname inkl. Modell, z. B. „Liebherr CBNsda 572i-22 Kühl-Gefrierkombination“"
+
+      - label: "Preis"
+        name: "price"
+        widget: "string"
+        hint: "z. B. 999,00 €"
+
+      - label: "UVP"
+        name: "uvp"
+        widget: "string"
+        required: false
+        hint: "optional, z. B. 1.599,00 €"
+
+      - label: "Bild"
+        name: "image"
+        widget: "image"
+        choose_url: false
+        hint: "Produktbild, wird unter /assets/offers abgelegt"
+
+      - label: "Kurztext (optional)"
+        name: "teaser"
+        widget: "string"
+        required: false
+        hint: "1 kurzer Satz für die Karte (wie früher unter dem Preis)"
+
+      - label: "Bulletpoints (Kurzinfos)"
+        name: "bullets"
+        widget: "list"
+        min: 0
+        max: 10
+        hint: "0–10 kurze Fakten (z. B. NoFrost, 258 l, Energieverbrauch 116 kWh/Jahr)"
+        field:
+          label: "Bullet"
+          name: "bullet"
+          widget: "string"
+
+      - label: "Features (Details)"
+        name: "features"
+        widget: "list"
+        required: false
+        min: 0
+        max: 10
+        collapsed: true
+        summary: "{{fields.title}}"
+        hint: "Ausführliche Feature-Blöcke für den Detailbereich (neu). Wenn gefüllt, werden Highlights ignoriert."
+        fields:
+          - label: "Überschrift"
+            name: "title"
+            widget: "string"
+          - label: "Beschreibung"
+            name: "description"
+            widget: "text"
+            hint: "1–2 Sätze, Nutzen erklären (kein Bullet-Stil)"
+
+      - label: "Highlights (Altbestand / Fallback)"
+        name: "highlights"
+        widget: "text"
+        required: false
+        hint: "Nur für alte Angebote. Wird nur genutzt, wenn keine Features vorhanden sind."
+
+      - label: "Kategorie"
+        name: "category"
+        widget: "string"
+        required: false
+        hint: "z. B. Kühlen/Gefrieren, Waschen, TV"
+
+      - label: "Gültig bis"
+        name: "valid_to"
+        widget: "datetime"
+        required: false
+        time_format: false
+        format: "YYYY-MM-DD"        # so wird es im JSON gespeichert
+        date_format: "DD-MM-YYYY"   # so sieht es der Editor im CMS
+
+      - label: "Top-Angebot"
+        name: "featured"
+        widget: "boolean"
+        required: false
+        default: false
+
+      - label: "Hinweis (optional)"
+        name: "note"
+        widget: "string"
+        required: false
+        hint: "Kleiner Zusatztext unter dem Preis (optional)"
+
+      - label: "CTA-Link"
+        name: "cta_link"
+        widget: "string"
+        required: false
+        default: "https://unger-warburg.de/#kontakt"
+
+      - label: "Aktiv"
+        name: "active"
+        widget: "boolean"
+        default: true
