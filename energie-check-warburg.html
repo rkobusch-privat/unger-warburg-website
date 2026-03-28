@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+
+  <title>Strom- & Gas-Check in Warburg | Vertrag prüfen lassen – Unger</title>
+  <meta name="description" content="Strom- oder Gasvertrag in Warburg prüfen lassen: Geben Sie Ihre Daten unkompliziert online ein. Unger meldet sich mit einer persönlichen Einschätzung zurück." />
+
+  <link rel="canonical" href="https://www.unger-warburg.de/energie-check-warburg.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
+  <meta property="og:title" content="Strom- & Gas-Check in Warburg – Unger" />
+  <meta property="og:description" content="Strom- oder Gasvertrag online übermitteln und persönlich prüfen lassen – einfach, verständlich und vor Ort in Warburg." />
+  <meta property="og:url" content="https://www.unger-warburg.de/energie-check-warburg.html" />
+  <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Strom- & Gas-Check in Warburg – Unger" />
+  <meta name="twitter:description" content="Jetzt Strom- oder Gasvertrag prüfen lassen und Daten direkt online übermitteln." />
+  <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://www.unger-warburg.de/energie-check-warburg.html",
+        "url": "https://www.unger-warburg.de/energie-check-warburg.html",
+        "name": "Strom- und Gas-Check in Warburg",
+        "description": "Online-Formular zur Übermittlung von Vertragsdaten für die Prüfung von Strom- und Gasverträgen.",
+        "isPartOf": { "@id": "https://www.unger-warburg.de/#website" }
+      },
+      {
+        "@type": "Service",
+        "name": "Strom- und Gas-Check in Warburg",
+        "serviceType": [
+          "Stromvertrag prüfen",
+          "Gasvertrag prüfen"
+        ],
+        "areaServed": {
+          "@type": "AdministrativeArea",
+          "name": "Warburg"
+        },
+        "provider": {
+          "@type": "Store",
+          "name": "Unger Haushalts- & Medientechnik UG (haftungsbeschränkt)",
+          "url": "https://www.unger-warburg.de/",
+          "telephone": "+49 5641 3331",
+          "email": "info@unger-warburg.de",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Marktstr. 6",
+            "postalCode": "34414",
+            "addressLocality": "Warburg",
+            "addressCountry": "DE"
+          }
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    .form-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .form-intro {
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      background: rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 14px;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-field--full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      border: 1px solid rgba(0,0,0,0.14);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font: inherit;
+      color: inherit;
+      background: #fff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: rgba(0,0,0,0.3);
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+    }
+
+    .form-textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .form-help {
+      font-size: 0.95rem;
+      color: rgba(0,0,0,0.7);
+    }
+
+    .form-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .mini-note {
+      margin-top: 4px;
+      font-size: 0.92rem;
+      color: rgba(0,0,0,0.68);
+    }
+
+    @media (max-width: 760px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+      <a class="toplink" href="/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
+    </div>
+    <div class="topbar__right">
+      <a class="toplink" href="tel:+4956413331">☎ 05641 / 3331</a>
+      <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+    </div>
+  </div>
+</div>
+  <header class="header" id="start">
+  <div class="container header__inner">
+    <a class="brand" href="/" aria-label="Startseite">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleLines" aria-hidden="true"></span>
+        <span class="sr-only">Menü</span>
+      </button>
+
+      <ul class="nav__menu" id="navMenu">
+        <li><a href="/">Start</a></li>
+        <li><a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a></li>
+        <li><a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="/handy-warburg.html">Handy</a></li>
+        <li><a href="/computer-warburg.html">Computer</a></li>
+        <li><a href="/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="/vertragscheck-warburg.html">Vertrags-Check</a></li>
+        <li><a href="/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="/#kontakt">Angebot anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+  <main id="content">
+
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumbs"><a href="/">Start</a> › <a href="/vertragscheck-warburg.html">Vertrags-Check</a> › Strom- & Gas-Check</p>
+
+        <h1>Strom- und Gasvertrag prüfen lassen</h1>
+        <p class="lead">
+          Übermitteln Sie uns hier schnell und unkompliziert die wichtigsten Angaben.
+          Wir prüfen Ihre Situation persönlich und melden uns mit einer verständlichen Einschätzung zurück.
+        </p>
+
+        <div class="hero__cta">
+          <a class="btn" href="#energie-formular">Jetzt Daten eingeben</a>
+          <a class="btn btn--ghost" href="tel:+4956413331">Anrufen</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>Nur die wichtigsten Angaben</h2>
+          <p>So einfach wie möglich – damit der Einstieg nicht unnötig aufwendig wird.</p>
+        </div>
+
+        <div class="form-wrap" id="energie-formular">
+          <div class="form-card">
+            <div class="form-intro">
+              <strong>Wichtig:</strong> Für die erste Prüfung benötigen wir nur die wesentlichen Angaben.
+              Wenn ein Wechsel sinnvoll ist, übernehmen wir auf Wunsch auch die weiteren Formalitäten –
+              zum Beispiel die <strong>Kündigung beim bisherigen Anbieter</strong>.
+            </div>
+
+            <form name="energie-check" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/danke.html">
+              <input type="hidden" name="form-name" value="energie-check">
+              <p style="display:none;">
+                <label>Bitte dieses Feld nicht ausfüllen: <input name="bot-field"></label>
+              </p>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="vertragstyp">Was möchten Sie prüfen lassen?</label>
+                  <select class="form-select" id="vertragstyp" name="vertragstyp" required>
+                    <option value="">Bitte auswählen</option>
+                    <option value="Strom">Strom</option>
+                    <option value="Gas">Gas</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="anbieter">Aktueller Anbieter</label>
+                  <input class="form-input" type="text" id="anbieter" name="anbieter" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="vorname">Vorname</label>
+                  <input class="form-input" type="text" id="vorname" name="vorname" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="nachname">Nachname</label>
+                  <input class="form-input" type="text" id="nachname" name="nachname" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="email">E-Mail</label>
+                  <input class="form-input" type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="telefon">Telefon</label>
+                  <input class="form-input" type="tel" id="telefon" name="telefon" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="jahresverbrauch">Jahresverbrauch kWh</label>
+                  <input class="form-input" type="number" id="jahresverbrauch" name="jahresverbrauch_kwh" min="0" step="1" placeholder="z. B. 3500" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="nebenzeit">Nebenzeit (NT) kWh</label>
+                  <input class="form-input" type="number" id="nebenzeit" name="nebenzeit_nt_kwh" min="0" step="1" placeholder="0">
+                  <div class="mini-note">Falls nicht vorhanden, einfach leer lassen oder 0 eintragen.</div>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="plz">PLZ</label>
+                  <input class="form-input" type="text" id="plz" name="plz" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="ort">Ort</label>
+                  <input class="form-input" type="text" id="ort" name="ort" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="strasse">Straße</label>
+                  <input class="form-input" type="text" id="strasse" name="strasse" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="hausnummer">Hausnummer</label>
+                  <input class="form-input" type="text" id="hausnummer" name="hausnummer" required>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="rueckrufzeit">Beste Zeit für einen Rückruf</label>
+                  <input class="form-input" type="text" id="rueckrufzeit" name="rueckrufzeit" placeholder="z. B. werktags 14–17 Uhr">
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label" for="vertragsende">Vertragsende / Kündigungsfrist</label>
+                  <input class="form-input" type="text" id="vertragsende" name="vertragsende_kuendigungsfrist" placeholder="Optional">
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-label" for="bemerkung">Bemerkung</label>
+                  <textarea class="form-textarea" id="bemerkung" name="bemerkung" placeholder="Optional: Zusätzliche Hinweise oder Fragen"></textarea>
+                  <div class="form-help">
+                    Dieses Feld ist freiwillig. Für die erste Prüfung reichen die Angaben oben in der Regel aus.
+                  </div>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <label class="form-check">
+                    <input type="checkbox" name="datenschutz" required>
+                    <span>
+                      Ich stimme zu, dass meine Angaben zur Bearbeitung meiner Anfrage verwendet werden.
+                      Hinweise zum Umgang mit personenbezogenen Daten finde ich in der
+                      <a href="/datenschutz.html">Datenschutzerklärung</a>.
+                    </span>
+                  </label>
+                </div>
+
+                <div class="form-field form-field--full">
+                  <div class="form-actions">
+                    <button class="btn" type="submit">Prüfung absenden</button>
+                    <a class="btn btn--ghost" href="/vertragscheck-warburg.html">Zurück zum Vertrags-Check</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section__head">
+          <h2>So einfach läuft es ab</h2>
+          <p>Wenig Aufwand für Sie – persönliche Prüfung durch uns.</p>
+        </div>
+
+        <div class="split">
+          <div class="panel">
+            <h3>1. Daten eingeben</h3>
+            <p>
+              Sie tragen nur die wichtigsten Angaben zu Ihrem bestehenden Strom- oder Gasvertrag ein.
+              Mehr ist für den ersten Vergleich nicht nötig.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3>2. Wir prüfen und kümmern uns</h3>
+            <p>
+              Wir schauen uns Ihre Angaben an und melden uns persönlich zurück. Wenn ein Wechsel sinnvoll ist,
+              übernehmen wir auf Wunsch auch die Formalitäten – zum Beispiel die Kündigung beim bisherigen Anbieter.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout__text">
+            <strong>Gut zu wissen:</strong> Das Absenden des Formulars ist zunächst nur eine Anfrage zur Prüfung – kein automatischer Vertragswechsel.
+          </div>
+          <a class="btn" href="tel:+4956413331">Fragen? Jetzt anrufen</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>FAQ</h2>
+          <p>Kurze Antworten auf häufige Fragen.</p>
+        </div>
+
+        <details class="card" style="margin-top:12px">
+          <summary style="font-weight:900;cursor:pointer">Muss ich viele Vertragsdaten bereithalten?</summary>
+          <div class="card__text" style="margin-top:8px">
+            Nein. Für die erste Einschätzung fragen wir bewusst nur die wichtigsten Angaben ab, damit die Anfrage schnell und unkompliziert bleibt.
+          </div>
+        </details>
+
+        <details class="card" style="margin-top:12px">
+          <summary style="font-weight:900;cursor:pointer">Muss ich mich selbst um die Kündigung kümmern?</summary>
+          <div class="card__text" style="margin-top:8px">
+            Nein, wenn ein Wechsel sinnvoll ist, übernehmen wir auf Wunsch auch die weiteren Formalitäten – zum Beispiel die Kündigung beim bisherigen Anbieter.
+          </div>
+        </details>
+
+        <details class="card" style="margin-top:12px">
+          <summary style="font-weight:900;cursor:pointer">Ist das schon ein Vertragsabschluss?</summary>
+          <div class="card__text" style="margin-top:8px">
+            Nein. Das Formular dient zunächst nur dazu, Ihre bestehende Situation zu prüfen und Ihnen eine persönliche Rückmeldung zu geben.
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+    </div>
+
+    <div class="footer__links">
+      <a href="/">Start</a>
+      <a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a>
+      <a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="/tv-audio-warburg.html">TV & Audio</a>
+      <a href="/handy-warburg.html">Handy</a>
+      <a href="/computer-warburg.html">Computer</a>
+      <a href="/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="/vertragscheck-warburg.html">Vertrags-Check</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+    </div>
+
+    <div class="footer__fine">
+      © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+    </div>
+  </div>
+</footer>
+  
+  <script>
+    (function () {
+      var el = document.getElementById("year");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

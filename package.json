@@ -1,0 +1,12 @@
+{
+  "name": "unger-warburg-website",
+  "version": "1.0.0",
+  "description": "Website für Unger Haushalts- & Medientechnik",
+  "main": "build-site.js",
+  "scripts": {
+    "build": "node build-site.js",
+    "watch": "node --watch build-site.js"
+  },
+  "author": "Unger",
+  "license": "ISC"
+}

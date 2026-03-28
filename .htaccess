@@ -1,0 +1,4 @@
+RewriteEngine On
+
+RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover\.xml$ [NC]
+RewriteRule ^autodiscover/autodiscover\.xml$ https://autodiscover.rk-exchange.de/autodiscover/autodiscover.xml [R=301,L]
