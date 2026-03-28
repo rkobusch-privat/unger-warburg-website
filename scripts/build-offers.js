@@ -3,6 +3,13 @@ import path from "path";
 
 const ROOT = process.cwd();
 const OFFERS_DIR = path.join(ROOT, "content", "offers");
+const TEMPLATE_PATH = path.join(ROOT, "templates", "offers-page.html");
+
+const PARTIALS_DIR = path.join(ROOT, "partials");
+const TOPBAR_PATH = path.join(PARTIALS_DIR, "topbar.html");
+const HEADER_PATH = path.join(PARTIALS_DIR, "header.html");
+const FOOTER_PATH = path.join(PARTIALS_DIR, "footer.html");
+
 const OUT_INDEX = path.join(ROOT, "index.html");
 const OUT_ANGEBOTE = path.join(ROOT, "angebote.html");
 
@@ -48,19 +55,19 @@ function parseDateISO(dateStr) {
 }
 
 function formatDateDE(iso) {
-  // Erwartet "YYYY-MM-DD"
   if (!iso || typeof iso !== "string") return "";
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
   const [, yyyy, mm, dd] = m;
-  return `${dd}.${mm}.${yyyy}`; // ✅ TT.MM.JJJJ
+  return `${dd}.${mm}.${yyyy}`;
 }
 
 function slugify(str = "") {
   return String(str)
     .toLowerCase()
     .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "") // Accents raus
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ß/g, "ss")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
@@ -70,8 +77,19 @@ function toAbsUrl(url) {
   const u = String(url || "").trim();
   if (!u) return "";
   if (u.startsWith("http://") || u.startsWith("https://")) return u;
-  // Bilder liegen bei euch als /assets/... auf der Angebote-Subdomain
   return `https://angebote.unger-warburg.de${u.startsWith("/") ? "" : "/"}${u}`;
+}
+
+function readFileSafe(filePath, label) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`${label} nicht gefunden: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, "utf8");
+}
+
+function readOptionalFile(filePath) {
+  if (!fs.existsSync(filePath)) return "";
+  return fs.readFileSync(filePath, "utf8");
 }
 
 /* ================= Normalizer ================= */
@@ -111,9 +129,15 @@ function normalizeHighlights(raw) {
 /* ================= Read offers ================= */
 
 function readOffers() {
-  if (!fs.existsSync(OFFERS_DIR)) return [];
+  if (!fs.existsSync(OFFERS_DIR)) {
+    console.warn(`⚠️ Angebotsordner nicht gefunden: ${OFFERS_DIR}`);
+    return [];
+  }
 
-  const files = fs.readdirSync(OFFERS_DIR).filter((f) => f.endsWith(".json"));
+  const files = fs
+    .readdirSync(OFFERS_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort((a, b) => a.localeCompare(b, "de"));
 
   let offers = files
     .map((file) => {
@@ -136,8 +160,8 @@ function readOffers() {
           cta_link: d.cta_link || "https://unger-warburg.de/#kontakt",
           active: d.active !== false,
         };
-      } catch {
-        console.warn(`⚠️ Offer JSON kaputt: ${file}`);
+      } catch (error) {
+        console.warn(`⚠️ Offer JSON kaputt: ${file} (${error.message})`);
         return null;
       }
     })
@@ -176,10 +200,7 @@ function buildOffersSchema(offers) {
       url: `${pageUrl}#${anchor}`,
     };
 
-    // Preis nur, wenn sauber parsebar
     if (!Number.isNaN(priceNum)) offerObj.price = priceNum;
-
-    // Gültig bis (ISO) – genau das ist das SEO-Feld
     if (o.valid_to) offerObj.priceValidUntil = o.valid_to;
 
     return {
@@ -199,7 +220,7 @@ function buildOffersSchema(offers) {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Aktuelle Angebote von Unger Haushalts- & Medientechnik",
-    url: "https://angebote.unger-warburg.de/angebote.html",
+    url: pageUrl,
     numberOfItems: itemListElement.length,
     itemListElement,
   };
@@ -256,7 +277,9 @@ function renderTile(o) {
 
   if (!Number.isNaN(p) && !Number.isNaN(u) && u > p) {
     const perc = Math.round(((u - p) / u) * 100);
-    if (perc > 0) badge = `<span class="offer-badge">-${perc}%</span>`;
+    if (perc > 0) {
+      badge = `<span class="offer-badge">-${perc}%</span>`;
+    }
   }
 
   const cls = o.featured ? "tile offer-card--featured" : "tile";
@@ -300,10 +323,29 @@ function renderTile(o) {
 </article>`;
 }
 
+/* ================= Partials ================= */
+
+function buildHeaderMarkup() {
+  const topbar = readOptionalFile(TOPBAR_PATH);
+  const header = readOptionalFile(HEADER_PATH);
+
+  if (!topbar && !header) {
+    return "";
+  }
+
+  return `${topbar}\n${header}`.trim();
+}
+
+function buildFooterMarkup() {
+  return readOptionalFile(FOOTER_PATH);
+}
+
 /* ================= Page ================= */
 
 function renderPage(offers) {
-  const tpl = fs.readFileSync(path.join(ROOT, "templates", "offers-page.html"), "utf8");
+  const tpl = readFileSafe(TEMPLATE_PATH, "Template");
+  const headerMarkup = buildHeaderMarkup();
+  const footerMarkup = buildFooterMarkup();
 
   const content = offers.length
     ? `<div class="grid offers-grid">${offers.map(renderTile).join("")}</div>`
@@ -311,20 +353,39 @@ function renderPage(offers) {
 
   const schema = buildOffersSchema(offers);
 
-  // Schema robust in den Head injizieren, ohne am Template bauen zu müssen
   const withSchema = tpl.includes("</head>")
     ? tpl.replace("</head>", `${schema}\n</head>`)
     : `${schema}\n${tpl}`;
 
-  return withSchema.replace("{{CONTENT}}", content);
+  let html = withSchema.replaceAll("{{CONTENT}}", content);
+
+  if (html.includes("{{HEADER}}")) {
+    html = html.replaceAll("{{HEADER}}", headerMarkup);
+  }
+
+  if (html.includes("{{FOOTER}}")) {
+    html = html.replaceAll("{{FOOTER}}", footerMarkup);
+  }
+
+  return html;
 }
 
 /* ================= Build ================= */
 
-const offers = readOffers();
-const html = renderPage(offers);
+function main() {
+  const offers = readOffers();
+  const html = renderPage(offers);
 
-fs.writeFileSync(OUT_INDEX, html, "utf8");
-fs.writeFileSync(OUT_ANGEBOTE, html, "utf8");
+  fs.writeFileSync(OUT_INDEX, html, "utf8");
+  fs.writeFileSync(OUT_ANGEBOTE, html, "utf8");
 
-console.log(`✔ Angebote gebaut: ${offers.length}`);
+  console.log(`✔ Angebote gebaut: ${offers.length}`);
+}
+
+try {
+  main();
+} catch (error) {
+  console.error("✖ Fehler beim Build der Angebotsseiten");
+  console.error(error.message);
+  process.exit(1);
+}
