@@ -247,7 +247,46 @@
 
 <a class="skip-link" href="#content">Zum Inhalt springen</a>
 
-{{HEADER}}
+<div class="topbar">
+  <div class="container topbar__inner">
+    <div class="topbar__left">
+      <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
+      <a class="toplink" href="/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
+    </div>
+    <div class="topbar__right">
+      <a class="toplink" href="tel:+4956413331">☎ 05641 / 3331</a>
+      <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
+    </div>
+  </div>
+</div>
+<header class="header" id="start">
+  <div class="container header__inner">
+    <a class="brand" href="/" aria-label="Startseite">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="nav__toggleLines" aria-hidden="true"></span>
+        <span class="sr-only">Menü</span>
+      </button>
+
+      <ul class="nav__menu" id="navMenu">
+        <li><a href="/">Start</a></li>
+        <li><a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a></li>
+        <li><a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="/handy-warburg.html">Handy</a></li>
+        <li><a href="/computer-warburg.html">Computer</a></li>
+        <li><a href="/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="/vertragscheck-warburg.html">Vertrags-Check</a></li>
+        <li><a href="/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="/#kontakt">Angebot anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
 <main id="content">
 
@@ -526,7 +565,31 @@ IPX-Klassifizierung              IP67</div>
 
 </main>
 
-{{FOOTER}}
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
+    </div>
+
+    <div class="footer__links">
+      <a href="/">Start</a>
+      <a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a>
+      <a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="/tv-audio-warburg.html">TV & Audio</a>
+      <a href="/handy-warburg.html">Handy</a>
+      <a href="/computer-warburg.html">Computer</a>
+      <a href="/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="/vertragscheck-warburg.html">Vertrags-Check</a>
+      <a href="/impressum.html">Impressum</a>
+      <a href="/datenschutz.html">Datenschutz</a>
+    </div>
+
+    <div class="footer__fine">
+      © <span id="year"></span> Unger Haushalts- & Medientechnik UG (haftungsbeschränkt) · Marktstr. 6 · 34414 Warburg
+    </div>
+  </div>
+</footer>
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
