@@ -5,113 +5,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="index,follow" />
 
-  <title>Unger Haushalts- & Medientechnik in Warburg | Haushaltsgeräte, TV, Handy & Service</title>
-  <meta name="description" content="Unger Haushalts- & Medientechnik in Warburg – Beratung, Lieferung, Installation und Service für Haushaltsgeräte, TV/Audio, Handy, Computer, Vertrags-Checks sowie Satellitenanlagen & Satelliten-Internet." />
+  <!-- SEO -->
+  <title>Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik</title>
+  <meta name="description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
 
-  <link rel="canonical" href="https://www.unger-warburg.de/" />
+  <link rel="canonical" href="https://angebote.unger-warburg.de/angebote.html" />
 
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="de_DE" />
   <meta property="og:site_name" content="Unger Haushalts- & Medientechnik" />
-  <meta property="og:title" content="Unger Haushalts- & Medientechnik in Warburg" />
-  <meta property="og:description" content="Beratung, Lieferung, Installation und Service für Haushaltsgeräte, TV/Audio, Handy, Computer, Vertrags-Checks sowie Satellitenanlagen – direkt vor Ort in Warburg." />
-  <meta property="og:url" content="https://www.unger-warburg.de/" />
+  <meta property="og:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta property="og:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
+  <meta property="og:url" content="https://angebote.unger-warburg.de/angebote.html" />
   <meta property="og:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Unger Haushalts- & Medientechnik in Warburg" />
-  <meta name="twitter:description" content="Beratung, Lieferung, Installation und Service für Haushaltsgeräte, TV/Audio, Handy, Computer, Vertrags-Checks sowie Satellitenanlagen – direkt vor Ort in Warburg." />
+  <meta name="twitter:title" content="Angebote & Top-Preise in Warburg | Unger Haushalts- & Medientechnik" />
+  <meta name="twitter:description" content="Aktuelle Angebote für Haushaltsgeräte, TV & Technik in Warburg. Top-Preise, persönliche Beratung sowie Lieferung & Anschluss nach Absprache." />
   <meta name="twitter:image" content="https://www.unger-warburg.de/assets/og/og-default.jpg" />
 
   <link rel="icon" href="/favicon.ico" />
   <link rel="stylesheet" href="styles.css" />
 
+  <!-- Angebots-spezifische Ergänzungen -->
   <style>
-    .h1-sub{
-      display:block;
-      font-size:0.6em;
-      opacity:.9;
-      margin-top:.35rem;
+    /* Grid spacing (nur fein) */
+    .offers-grid { gap: 16px; }
+
+    /* ✅ Karten ruhiger: feste Slot-Logik */
+    .tile{
+      display:flex;
+      flex-direction:column;
     }
 
-    .btn--offers{
-      position: relative;
-      border: 2px solid var(--accent);
-      background: #fff;
-      color: var(--accent);
+    /* ✅ Titel bekommt "Slot" (ca. 2 Zeilen) => Preiszeile wirkt einheitlicher */
+    .tile h3{
+      margin: 0 0 10px;
+      min-height: 56px;
+      line-height: 1.25;
+    }
+
+    /* ✅ Bildslot: feste Höhe + Bild mittig (kein Crop) */
+    .offer-img{
+      width:100%;
+      height:240px;
+      object-fit:contain;
+      object-position:center;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      margin:0 0 12px;
+      display:block;
+    }
+    /* Kompatibel mit eurer Auto-Klassifizierung */
+    .offer-img.is-portrait{
+      height:240px;
+      object-fit:contain;
+    }
+    .offer-img.is-landscape{
+      height:240px;
+      object-fit:contain;
+    }
+
+    /* ✅ Preisblock: gleiche Baseline + stabil, wenn UVP fehlt */
+    .price-row{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 4px;
+      min-height: 34px;
+    }
+    .price-row strong{
+      font-size:20px;
+      font-weight:1000;
+    }
+
+    .offer-rrp{ color: var(--muted); font-weight: 800; }
+    .offer-rrp span{ text-decoration: line-through; margin-left: 6px; }
+
+    /* Datumzeile & Note im gleichen Rhythmus */
+    .muted.small{ margin: 6px 0 0; }
+    .note{ margin:10px 0 0; color: var(--muted); }
+
+    /* Details */
+    .offer-details{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .offer-details summary{
+      cursor: pointer;
       font-weight: 900;
     }
+    .offer-details__body{
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .offer-details__body p{ margin: 10px 0 0; }
 
-    .btn--offers::after{
-      content:"";
-      position:absolute;
-      inset:-4px;
+    .feature{ padding: 10px 0; border-bottom: 1px dashed var(--line); }
+    .feature:last-child{ border-bottom: none; }
+    .feature__title{ font-weight: 1000; color: var(--ink); margin-bottom: 6px; }
+    .feature__text{ color: var(--muted); }
+
+    /* ✅ Spar-Badge */
+    .offer-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: fit-content;
+      background: var(--accent);
+      color:#fff;
+      font-weight:900;
+      font-size:13px;
+      padding:4px 10px;
       border-radius:999px;
-      box-shadow: 0 0 0 0 rgba(200,0,0,0.42);
-      animation: offerPulse 1.8s ease-out 1;
-      pointer-events:none;
+      margin: 6px 0 10px;
+      line-height:1;
     }
 
-    @keyframes offerPulse{
-      0%   { box-shadow: 0 0 0 0 rgba(200,0,0,0.45); }
-      100% { box-shadow: 0 0 0 14px rgba(200,0,0,0); }
+    /* ✅ Featured-Angebote */
+    .offer-card--featured{
+      border: 2px solid var(--accent);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
-    .home-highlight{
-      margin-top: 18px;
-      padding: 16px 18px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.16);
-      backdrop-filter: blur(2px);
-    }
-
-    .home-highlight strong{
-      display:block;
-      margin-bottom: 6px;
-    }
+    /* Button spacing */
+    .tile .btn{ margin-top: 12px; }
   </style>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Store",
-    "name": "Unger Haushalts- & Medientechnik UG (haftungsbeschränkt)",
-    "url": "https://www.unger-warburg.de/",
-    "telephone": "+49 5641 796230",
-    "email": "info@unger-warburg.de",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Marktstr. 6",
-      "postalCode": "34414",
-      "addressLocality": "Warburg",
-      "addressCountry": "DE"
-    },
-    "areaServed": {
-      "@type": "AdministrativeArea",
-      "name": "Warburg"
-    }
-  }
-  </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Aktuelle Angebote von Unger Haushalts- & Medientechnik",
+  "url": "https://angebote.unger-warburg.de/angebote.html",
+  "numberOfItems": 0,
+  "itemListElement": []
+}
+</script>
 </head>
 
 <body>
-  <div class="topbar">
+
+<a class="skip-link" href="#content">Zum Inhalt springen</a>
+
+<div class="topbar">
   <div class="container topbar__inner">
     <div class="topbar__left">
       <span class="pill">📍 Marktstr. 6, 34414 Warburg</span>
-      <a class="toplink" href="/#kontakt" aria-label="Zum Kontakt">Kontakt</a>
+      <a class="toplink" href="https://unger-warburg.de/#kontakt">Kontakt</a>
     </div>
     <div class="topbar__right">
-      <a class="toplink" href="tel:+4956413331">☎ 05641 / 3331</a>
+      <a class="toplink" href="tel:+495641796230">☎ 05641 / 79623-0</a>
       <a class="toplink" href="mailto:info@unger-warburg.de">✉ info@unger-warburg.de</a>
     </div>
   </div>
 </div>
-  <header class="header" id="start">
+
+<header class="header" id="start">
   <div class="container header__inner">
-    <a class="brand" href="/" aria-label="Startseite">
-      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik Logo" class="brand__logo">
+    <a class="brand" href="https://unger-warburg.de/">
+      <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="brand__logo">
     </a>
 
     <nav class="nav" aria-label="Hauptnavigation">
@@ -121,451 +182,74 @@
       </button>
 
       <ul class="nav__menu" id="navMenu">
-        <li><a href="/">Start</a></li>
-        <li><a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a></li>
-        <li><a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
-        <li><a href="/tv-audio-warburg.html">TV & Audio</a></li>
-        <li><a href="/handy-warburg.html">Handy</a></li>
-        <li><a href="/computer-warburg.html">Computer</a></li>
-        <li><a href="/satellit-internet-warburg.html">Satellit & Internet</a></li>
-        <li><a href="/service-reparatur-warburg.html">Service & Reparatur</a></li>
-        <li><a href="/vertragscheck-warburg.html">Vertrags-Check</a></li>
-        <li><a href="/#ueber-uns">Über uns</a></li>
-        <li><a class="btn btn--small" href="/#kontakt">Angebot anfragen</a></li>
+        <li><a href="https://unger-warburg.de/">Start</a></li>
+        <li><a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a></li>
+        <li><a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a></li>
+        <li><a href="https://unger-warburg.de/handy-warburg.html">Handy</a></li>
+        <li><a href="https://unger-warburg.de/computer-warburg.html">Computer</a></li>
+        <li><a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a></li>
+        <li><a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a></li>
+        <li><a href="https://unger-warburg.de/#ueber-uns">Über uns</a></li>
+        <li><a class="btn btn--small" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-  <section class="hero hero--image" aria-label="Startbereich">
-    <div class="hero__bg" aria-hidden="true"></div>
-    <div class="container hero__inner">
-      <div class="hero__copy">
-        <div class="hero__kicker">
-          <span class="chip chip--red">Haushalt</span>
-          <span class="chip">TV & Audio</span>
-          <span class="chip">Handy</span>
-          <span class="chip">Computer</span>
-          <span class="chip">Vertrags-Check</span>
-          <span class="chip">Satellit</span>
-          <span class="chip">Sat-Internet</span>
-        </div>
+<main id="content">
 
-        <h1>
-          Unger Haushalts- & Medientechnik in Warburg
-          <span class="h1-sub">Technik, die passt. Service, der bleibt.</span>
-        </h1>
-
-        <p class="lead">
-          Beratung, Lieferung, Installation und Reparatur – für Haushaltsgeräte, Unterhaltungselektronik,
-          <strong>Handy</strong> und <strong>Computer</strong>, dazu <strong>Vertrags-Checks</strong> für Mobilfunk, Festnetz, Strom und Gas
-          sowie <strong>Satellitenanlagen</strong> und <strong>Satelliten-Internet</strong>.
-          Persönlich, zuverlässig und nah in Warburg.
-        </p>
-
-        <div class="hero__cta">
-          <a class="btn" href="#kontakt">Jetzt Termin/Angebot anfragen</a>
-          <a class="btn btn--offers" href="https://angebote.unger-warburg.de/angebote.html">🔥 Aktuelle Angebote ansehen</a>
-        </div>
-
-        <div class="home-highlight">
-          <strong>Neu bei uns: Vertrags-Check</strong>
-          Wir prüfen Handy-, Festnetz-, Strom- und Gasverträge auf mögliche Optimierungen.
-          Gerade beim Energie-Check reichen zunächst nur die wichtigsten Angaben –
-          auf Wunsch übernehmen wir auch die Formalitäten, z. B. die Kündigung.
-          <div style="margin-top:12px;">
-            <a class="btn btn--ghost" href="/vertragscheck-warburg.html">Mehr zum Vertrags-Check</a>
-          </div>
-        </div>
-
-        <div class="hero__badges" aria-label="Vorteile">
-          <div class="badge">✅ Fachberatung</div>
-          <div class="badge">🚚 Lieferung & Anschluss</div>
-          <div class="badge">🛠 Reparatur & Wartung</div>
-          <div class="badge">📺 TV/Audio-Installation</div>
-          <div class="badge">📄 Vertrags-Check</div>
-          <div class="badge">📡 Satellitenanlagen</div>
-          <div class="badge">🛰 Satelliten-Internet</div>
-        </div>
-      </div>
-
-      <div class="hero__card" role="region" aria-label="Schnellkontakt">
-        <div class="card card--accent">
-          <h2 class="card__title">Schnellkontakt</h2>
-          <p class="card__text">Am schnellsten erreichst du uns telefonisch oder per Mail.</p>
-
-          <div class="card__actions">
-            <a class="btn btn--full" href="tel:+4956413331">☎ 05641 / 3331</a>
-            <a class="btn btn--ghost btn--full" href="mailto:info@unger-warburg.de?subject=Anfrage%20%E2%80%93%20Unger%20Haushalts-%20%26%20Medientechnik">
-              ✉ info@unger-warburg.de
-            </a>
-          </div>
-
-          <div class="card__meta">
-            <div><strong>Öffnungszeiten:</strong><br/>Mo–Fr 09–18 Uhr · Sa 09–13 Uhr</div>
-            <div><strong>Adresse:</strong><br/>Marktstr. 6, 34414 Warburg</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="leistungen">
+  <section class="page-hero">
     <div class="container">
-      <div class="section__head">
-        <h2>Unsere Leistungen</h2>
-        <p>Alles aus einer Hand – von der Beratung bis zur Inbetriebnahme.</p>
-      </div>
-
-      <div class="grid">
-        <article class="tile">
-          <h3><a href="https://angebote.unger-warburg.de/angebote.html">Aktuelle Angebote in Warburg</a></h3>
-          <p>Ausgewählte Geräte zu Top-Preisen – regelmäßig aktualisiert. Schnell anfragen, wir beraten persönlich.</p>
-          <ul class="list">
-            <li>Haushaltsgeräte, TV & Technik</li>
-            <li>Top-Preise & ausgewählte Deals</li>
-            <li>Beratung, Lieferung & Anschluss nach Absprache</li>
-          </ul>
-          <a class="btn btn--ghost" href="https://angebote.unger-warburg.de/angebote.html">Zu den Angeboten</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/vertragscheck-warburg.html">Vertrags-Check in Warburg</a></h3>
-          <p>Wir prüfen Handy-, Festnetz-, Strom- und Gasverträge auf mögliche Optimierungen – persönlich, verständlich und mit wenig Aufwand für Sie.</p>
-          <ul class="list">
-            <li>Mobilfunk, Festnetz, Strom & Gas</li>
-            <li>Wenige Angaben für den Einstieg</li>
-            <li>Auf Wunsch mit Übernahme der Formalitäten</li>
-          </ul>
-          <a class="btn btn--ghost" href="/vertragscheck-warburg.html">Mehr zum Vertrags-Check</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte in Warburg</a></h3>
-          <p>Waschmaschine, Trockner, Geschirrspüler, Kühlgeräte, Backofen & mehr – passend zu Bedarf und Budget.</p>
-          <ul class="list">
-            <li>Bedarfsgerechte Produktauswahl</li>
-            <li>Altgerät-Mitnahme (optional)</li>
-            <li>Einbau & Anschluss</li>
-          </ul>
-          <a class="btn btn--ghost" href="/haushaltsgeraete-warburg.html">Mehr zu Haushaltsgeräten</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/tv-audio-warburg.html">TV & Heimkino in Warburg</a></h3>
-          <p>Fernseher, Soundbar, Receiver, Multiroom – sauber geplant und professionell installiert.</p>
-          <ul class="list">
-            <li>Wandmontage & Kabelmanagement</li>
-            <li>Sender-/App-Einrichtung</li>
-            <li>Bild-/Ton-Optimierung</li>
-          </ul>
-          <a class="btn btn--ghost" href="/tv-audio-warburg.html">Mehr zu TV & Audio</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/tv-audio-warburg.html">Audio & Netzwerk</a></h3>
-          <p>Stabiles WLAN, Streaming, Lautsprecher-Setups – damit alles zuverlässig zusammenarbeitet.</p>
-          <ul class="list">
-            <li>WLAN-Analyse & Optimierung</li>
-            <li>Smarthome-Basics</li>
-            <li>Einrichtung & Updates</li>
-          </ul>
-          <a class="btn btn--ghost" href="/tv-audio-warburg.html">Mehr zu Audio & Netzwerk</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/satellit-internet-warburg.html">Satellitenanlagen & Satelliten-Internet in Warburg</a></h3>
-          <p>Montage, Ausrichtung und Fehlersuche bei Sat-Empfang sowie Einrichtung von Satelliten-Internet – besonders sinnvoll in ländlichen Regionen rund um Warburg.</p>
-          <ul class="list">
-            <li>Sat-Schüssel-Montage & Ausrichtung</li>
-            <li>Single- & Multi-LNB-Anlagen</li>
-            <li>Satelliten-Internet inkl. Router & WLAN</li>
-          </ul>
-          <a class="btn btn--ghost" href="/satellit-internet-warburg.html">Mehr zu Satellit & Internet</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/service-reparatur-warburg.html">Beratung, Planung & Angebote</a></h3>
-          <p>Transparent, verständlich und ohne Fachchinesisch – inklusive fairer Optionen.</p>
-          <ul class="list">
-            <li>Vor-Ort-Beratung möglich</li>
-            <li>Angebotsvergleich</li>
-            <li>Planung bei Einbauküchen-Geräten</li>
-          </ul>
-          <a class="btn btn--ghost" href="/service-reparatur-warburg.html#kontakt">Anfrage stellen</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/handy-warburg.html">Handy & Smart Devices in Warburg</a></h3>
-          <p>Smartphones, Wearables, Zubehör – wir helfen bei Auswahl, Einrichtung und Datenübernahme.</p>
-          <ul class="list">
-            <li>Einrichtung & Updates</li>
-            <li>Datenübernahme / Backup</li>
-            <li>Zubehör: Hüllen, Ladegeräte, Audio</li>
-          </ul>
-          <a class="btn btn--ghost" href="/handy-warburg.html">Mehr zu Handy</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/computer-warburg.html">Computer & Home-Office in Warburg</a></h3>
-          <p>Notebook, PC, Drucker, Netzwerk – passend für Alltag, Schule und Büro.</p>
-          <ul class="list">
-            <li>Beratung & Zusammenstellung</li>
-            <li>Einrichtung: Windows, E-Mail, Cloud</li>
-            <li>WLAN, Drucker, Datensicherung</li>
-          </ul>
-          <a class="btn btn--ghost" href="/computer-warburg.html">Mehr zu Computer</a>
-        </article>
-
-        <article class="tile">
-          <h3><a href="/computer-warburg.html">WLAN & Heimnetz in Warburg</a></h3>
-          <p>Router, Mesh, WLAN-Optimierung und Heimnetz – damit Internet, Streaming und Drucker stabil laufen.</p>
-          <ul class="list">
-            <li>WLAN-Analyse & Reichweite verbessern</li>
-            <li>Mesh-Systeme & Router-Einrichtung</li>
-            <li>Heimnetz, Drucker & Streaming-Geräte</li>
-          </ul>
-          <a class="btn btn--ghost" href="/computer-warburg.html">Mehr zu WLAN & Heimnetz</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--soft" id="service">
-    <div class="container">
-      <div class="section__head">
-        <h2>Service, auf den man sich verlassen kann</h2>
-        <p>Wenn’s hakt, sind wir da – schnell, freundlich und lösungsorientiert.</p>
-      </div>
-
-      <div class="split">
-        <div class="panel">
-          <h3>Reparatur & Wartung</h3>
-          <p>Fehlersuche, Austausch, Pflege – für lange Lebensdauer und weniger Ärger.</p>
-          <div class="miniGrid">
-            <div class="mini">🛠 Diagnose & Kostenvoranschlag</div>
-            <div class="mini">🔁 Ersatzteile (modellabhängig)</div>
-            <div class="mini">🧾 Nachweis/Unterlagen für Garantie</div>
-            <div class="mini">🏠 Vor-Ort-Service (nach Absprache)</div>
-            <div class="mini">📡 Satelliten-Service (Montage/Empfang/Internet)</div>
-          </div>
-          <p style="margin-top:12px">
-            <a href="/service-reparatur-warburg.html" class="btn btn--ghost">Mehr zur Reparatur & zum Service</a>
-          </p>
-        </div>
-
-        <div class="panel">
-          <h3>Lieferung & Anschluss</h3>
-          <p>Sauberer Transport, fachgerechter Anschluss und kurze Einweisung – damit alles sofort läuft.</p>
-          <div class="miniGrid">
-            <div class="mini">🚚 Lieferung im Umkreis</div>
-            <div class="mini">🔌 Anschluss & Dichtigkeitscheck</div>
-            <div class="mini">🧰 Einbaugeräte (Nische/Front)</div>
-            <div class="mini">♻ Altgerät-Mitnahme (optional)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="callout">
-        <div class="callout__text">
-          <strong>Servicefall?</strong> Schreib uns kurz Modell + Problem – wir melden uns mit dem nächsten Schritt.
-        </div>
-        <a class="btn" href="#kontakt">Service anfragen</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="marken">
-    <div class="container">
-      <div class="section__head">
-        <h2>Marken</h2>
-        <p>Beispiele – wir beraten herstellerneutral und nach Verfügbarkeit.</p>
-      </div>
-
-      <div class="logos" aria-label="Marken-Logos als Textplatzhalter">
-        <div class="logo">Miele</div>
-        <div class="logo">Bosch</div>
-        <div class="logo">Siemens</div>
-        <div class="logo">LG</div>
-        <div class="logo">Samsung</div>
-        <div class="logo">Sony</div>
-        <div class="logo">Panasonic</div>
-        <div class="logo">Beko</div>
-      </div>
-
-      <p class="muted small">
-        Hinweis: Logos/Markennamen dienen hier als Platzhalter. Wenn du echte Logos nutzen willst, sollten wir die Nutzungsrechte beachten.
+      <p class="breadcrumbs">
+        <a href="https://unger-warburg.de/">Start</a> › Angebote
       </p>
+
+      <h1>Angebote</h1>
+
+      <p class="lead">
+        Attraktive Preise auf ausgewählte Geräte – jetzt sparen und persönlich beraten lassen.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn" href="https://unger-warburg.de/#kontakt">Angebot anfragen</a>
+        <a class="btn btn--ghost" href="https://unger-warburg.de/#kontakt">Direkt schreiben</a>
+      </div>
     </div>
   </section>
 
-  <section class="section section--soft" id="ladenlokal">
+  <section class="section">
     <div class="container">
-      <div class="section__head">
-        <h2>Unser Ladenlokal</h2>
-        <p>Einblicke in Beratung, Ausstellung und Service vor Ort.</p>
-      </div>
 
-      <div class="gallery">
-        <figure class="shot">
-          <button class="shot__btn" type="button" data-lightbox="img/laden-1.jpg" aria-label="Bild vergrößern: Außenansicht">
-            <img src="img/laden-1.jpg" alt="Außenansicht des Ladenlokals in Warburg" loading="lazy">
-          </button>
-          <figcaption>Außenansicht</figcaption>
-        </figure>
+      <p>Aktuell keine Angebote.</p>
 
-        <figure class="shot">
-          <button class="shot__btn" type="button" data-lightbox="img/laden-2.jpg" aria-label="Bild vergrößern: TV & Heimkino">
-            <img src="img/laden-2.jpg" alt="TV- und Heimkino-Bereich im Laden" loading="lazy">
-          </button>
-          <figcaption>TV & Heimkino</figcaption>
-        </figure>
+      <p class="muted small" style="margin-top:18px">
+        Alle Preise inkl. gesetzlicher MwSt. · Angebote solange der Vorrat reicht.
+      </p>
+      <p class="muted small" style="margin-top:6px">
+        UVP = unverbindliche Preisempfehlung des Herstellers.
+      </p>
 
-        <figure class="shot">
-          <button class="shot__btn" type="button" data-lightbox="img/laden-3.jpg" aria-label="Bild vergrößern: Zubehör & Beratung">
-            <img src="img/laden-3.jpg" alt="Innenansicht mit Zubehör und Beratungsbereich im Laden" loading="lazy">
-          </button>
-          <figcaption>Zubehör & Beratung</figcaption>
-        </figure>
-      </div>
     </div>
   </section>
 
-  <section class="section" id="ueber-uns">
-    <div class="container">
-      <div class="section__head">
-        <h2>Über uns</h2>
-        <p>Regional verwurzelt – mit Anspruch an Qualität und ehrliche Beratung.</p>
-      </div>
+</main>
 
-      <div class="about">
-        <div class="about__text">
-          <p>
-            <strong>Unger Haushalts- & Medientechnik</strong> steht für Techniklösungen, die im Alltag wirklich funktionieren.
-            Ob neues Gerät, Installation oder Reparatur: Wir nehmen uns Zeit, erklären verständlich und liefern saubere Ergebnisse.
-          </p>
-
-          <p>
-            Vielen Kundinnen und Kunden in Warburg ist unser Fachgeschäft noch unter den
-            Namen <strong>Hifi-Studio Unger</strong> oder <strong>Euronics Unger</strong> bekannt.
-            Zuvor waren wir am Standort <strong>Paderborner Tor</strong> ansässig.
-            Heute begrüßen wir Sie mit dem gleichen Anspruch an persönliche Beratung,
-            hochwertige Technik und zuverlässigen Service in unserem neuen Geschäft in der
-            <strong>Marktstraße 6</strong>.
-          </p>
-
-          <ul class="list">
-            <li>Individuelle Beratung statt Standardsprüche</li>
-            <li>Verlässliche Termine & transparente Kosten</li>
-            <li>Service auch nach dem Kauf</li>
-          </ul>
-          <p>&nbsp;</p>
-        </div>
-      </div>
-
-      <div class="about__facts">
-        <div class="fact">
-          <div class="fact__num">✓</div>
-          <div class="fact__label">Beratung & Auswahl</div>
-        </div>
-        <div class="fact">
-          <div class="fact__num">✓</div>
-          <div class="fact__label">Lieferung & Anschluss</div>
-        </div>
-        <div class="fact">
-          <div class="fact__num">✓</div>
-          <div class="fact__label">Reparatur & Support</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="kontakt">
-    <div class="container">
-      <div class="section__head">
-        <h2>Kontakt</h2>
-        <p>Schreib uns – am besten mit kurzer Info zu Gerät/Projekt und deinem Ort.</p>
-      </div>
-
-      <div class="contact">
-        <form class="form" onsubmit="return handleContactSubmit(event)">
-          <div class="form__row">
-            <label>
-              Name
-              <input required name="name" autocomplete="name" placeholder="Max Mustermann" />
-            </label>
-            <label>
-              Telefon
-              <input name="phone" autocomplete="tel" placeholder="z.B. 05641 / ..." />
-            </label>
-          </div>
-
-          <label>
-            E-Mail
-            <input required type="email" name="email" autocomplete="email" placeholder="max@beispiel.de" />
-          </label>
-
-          <label>
-            Nachricht
-            <textarea required name="message" rows="5" placeholder="Worum geht’s? (z.B. Gerätemodell, Einbau, Reparatur, TV-Montage, Handy/PC-Einrichtung, Vertrags-Check ...)"></textarea>
-          </label>
-
-          <div class="form__footer">
-            <button class="btn" type="submit">Anfrage senden</button>
-            <p class="muted small">
-              Dieses Formular öffnet dein Mailprogramm (mailto) – keine Speicherung/Tracking.
-            </p>
-          </div>
-        </form>
-
-        <aside class="contact__info">
-          <div class="card">
-            <h3 class="card__title">Direkt</h3>
-            <p class="card__text">
-              <strong>Telefon:</strong> <a href="tel:+4956413331">05641 / 3331</a><br/>
-              <strong>E-Mail:</strong> <a href="mailto:info@unger-warburg.de">info@unger-warburg.de</a>
-            </p>
-
-            <p class="card__text">
-              <strong>Adresse:</strong><br/>
-              Marktstr. 6<br/>
-              34414 Warburg
-            </p>
-
-            <p class="card__text">
-              <strong>Öffnungszeiten:</strong><br/>
-              Mo–Fr 09–18 Uhr<br/>
-              Sa 09–13 Uhr
-            </p>
-
-            <a class="btn btn--ghost btn--full" target="_blank" rel="noopener"
-               href="https://www.google.com/maps/search/?api=1&query=Marktstr.%206%2C%2034414%20Warburg">
-              Route öffnen
-            </a>
-          </div>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <footer class="footer">
+<footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
       <img src="img/logo.png" alt="Unger Haushalts- & Medientechnik" class="footer__logo">
     </div>
 
     <div class="footer__links">
-      <a href="/">Start</a>
-      <a href="https://angebote.unger-warburg.de/angebote.html">Angebote</a>
-      <a href="/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
-      <a href="/tv-audio-warburg.html">TV & Audio</a>
-      <a href="/handy-warburg.html">Handy</a>
-      <a href="/computer-warburg.html">Computer</a>
-      <a href="/satellit-internet-warburg.html">Satellit & Internet</a>
-      <a href="/service-reparatur-warburg.html">Service & Reparatur</a>
-      <a href="/vertragscheck-warburg.html">Vertrags-Check</a>
-      <a href="/impressum.html">Impressum</a>
-      <a href="/datenschutz.html">Datenschutz</a>
+      <a href="https://unger-warburg.de/">Start</a>
+      <a href="https://unger-warburg.de/haushaltsgeraete-warburg.html">Haushaltsgeräte</a>
+      <a href="https://unger-warburg.de/tv-audio-warburg.html">TV & Audio</a>
+      <a href="https://unger-warburg.de/handy-warburg.html">Handy</a>
+      <a href="https://unger-warburg.de/computer-warburg.html">Computer</a>
+      <a href="https://unger-warburg.de/satellit-internet-warburg.html">Satellit & Internet</a>
+      <a href="https://unger-warburg.de/service-reparatur-warburg.html">Service & Reparatur</a>
+      <a href="https://unger-warburg.de/impressum.html">Impressum</a>
+      <a href="https://unger-warburg.de/datenschutz.html">Datenschutz</a>
     </div>
 
     <div class="footer__fine">
@@ -574,21 +258,29 @@
   </div>
 </footer>
 
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox__backdrop" data-close></div>
-    <div class="lightbox__dialog" role="dialog" aria-modal="true" aria-label="Bildanzeige">
-      <button class="lightbox__close" type="button" data-close aria-label="Schließen">✕</button>
-      <img class="lightbox__img" id="lightboxImg" alt="" />
-    </div>
-  </div>
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
-  
-  <script>
-    (function () {
-      var el = document.getElementById("year");
-      if (el) el.textContent = new Date().getFullYear();
-    })();
-  </script>
-  <script src="script.js"></script>
+<script>
+(function () {
+  function tag(img) {
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+    if (img.naturalHeight > img.naturalWidth * 1.15) img.classList.add("is-portrait");
+    else img.classList.add("is-landscape");
+  }
+  function init() {
+    document.querySelectorAll("img.offer-img").forEach(function (img) {
+      if (img.complete) tag(img);
+      else img.addEventListener("load", function () { tag(img); }, { once: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script src="script.js"></script>
+
 </body>
 </html>
